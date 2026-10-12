@@ -1,0 +1,25 @@
+[project]
+name = "agora"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=1.13.0",
+    "beautifulsoup4>=4.15.0",
+    "chromadb>=1.5.9",
+    "ebooklib>=0.20",
+    "fastapi>=0.143.0",
+    "httpx>=0.28.1",
+    "langchain-community>=0.4.2",
+    "pydantic-settings>=2.15.0",
+    "python-dotenv>=1.2.4",
+    "sentence-transformers>=6.1.0",
+    "unstructured[epub]>=0.27.25",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "ruff>=0.17.0",
+]
