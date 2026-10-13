@@ -5,6 +5,7 @@ from langchain_core.messages import (
     SystemMessage,
     HumanMessage
 )
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import (
     ChatOpenAI,
     OpenAIEmbeddings
@@ -61,17 +62,14 @@ def retrieve(question:str, num_chunks_to_retrieve: int = 8, filters: dict | None
 
     results = vectorstore.similarity_search(question, num_chunks_to_retrieve=num_chunks_to_retrieve, filter=filters or None)
     return results
+human_translation_request = "Translate this passage into contemporary English:\n\n<passage>\n{passage}\n</passage>"
 
-def translation_for_passage(passage:str):
-    return [
-        SystemMessage(content=sys_message_input),
-        HumanMessage(
-            content=(
-                "Translate this passage into contemporary English:\n\n"
-                f"<passage>\n{passage}\n</passage>"
-            )
-        )
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ('system', sys_message_input),
+        ('user', human_translation_request)
     ]
+)
 
 if __name__ == "__main__":
 
@@ -86,7 +84,8 @@ if __name__ == "__main__":
     results = retrieve(question)
     model = ChatOpenAI(model="gpt-4.1-mini")
     model_with_structure=model.with_structured_output(ModernizedWork)
-    responses = model_with_structure.batch([translation_for_passage(result.page_content) for result in results])
+    chain = prompt | model_with_structure
+    responses = chain.batch([{"passage":result.page_content} for result in results])
 
     for response in responses:
         print(response.TranslatedPassage)
