@@ -10,9 +10,20 @@ from langchain_openai import (
 )
 from langchain_pinecone import PineconeVectorStore
 
+from pydantic import (
+    BaseModel,
+    Field    
+)
+
 # Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
 load_dotenv()
 
+class ModernizedWork(BaseModel):
+    Chapter:int=Field(description="The chapter of the text")
+    Section:int=Field(description="The section of the text")
+    Author:str=Field(description="The author of the work")
+    Title:str=Field(description="The title of the work")
+    TranslatedPassage:str=Field(description="21st century version of the prose")
 
 if __name__ == "__main__":
 
@@ -78,5 +89,6 @@ if __name__ == "__main__":
 
     # load the model
     model = ChatOpenAI(model="gpt-4.1-mini")
-    response = model.invoke(messages)
-    print(response.content)
+    model_with_structure=model.with_structured_output(ModernizedWork)
+    response = model_with_structure.invoke(messages)
+    print(response)
