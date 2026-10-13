@@ -1,11 +1,6 @@
-import os
-from typing import Any, Dict, List
-
 from dotenv import load_dotenv
-from langchain_community.document_loaders import UnstructuredEPubLoader
-from langchain_core.documents import Document
 from langchain_core.messages import (
-    SystemMessage, 
+    SystemMessage,
     HumanMessage
 )
 from langchain_openai import (
@@ -13,45 +8,22 @@ from langchain_openai import (
     OpenAIEmbeddings
 )
 from langchain_pinecone import PineconeVectorStore
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+# Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
 load_dotenv()
-loader = UnstructuredEPubLoader("pg7370.epub")
-documents = loader.load()
-# Sample the load
-# print(f"Loaded {len(documents)} documents")
-# print(documents[0].page_content[:1000])
-# print(documents[0].metadata)
 
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=2000,
-    chunk_overlap=200
-)
-
-chunks = splitter.split_documents(documents)
-# Sample the chunks
-# print(f"Created {len(chunks)} chunks")
-# print(chunks[0].page_content)
-# print(chunks[0].metadata)
-
-embeddings = OpenAIEmbeddings(
-    model="text-embedding-3-small",
-    dimensions=1024,
-    show_progress_bar=False,
-    chunk_size=50,
-    retry_min_seconds=10,
-)
-
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small", dimensions=1024)
 vectorstore = PineconeVectorStore(index_name="agora", embedding=embeddings)
 
-# prepare stable chunk ids to prevent rewrite to pinecone index
-chunk_ids = [
-    f"pg7370-chunk-{i}"
-    for i in range(len(chunks))
-]
-
-ids = vectorstore.add_documents(chunks, ids=chunk_ids)
-print(f"Uploaded {len(ids)} chunks to Pinecone")
+# Retrieve the passage to translate. The filter narrows the search by metadata; drop it to search everything.
+query = "how does a person come to own something?"
+results = vectorstore.similarity_search(query, k=1, filter={"chapter": 5})
+passage = results[0]
+meta = passage.metadata
+print(
+    f"Retrieved: {meta['author']}, {meta['work']}, "
+    f"Ch. {int(meta['chapter'])}, Sect. {int(meta.get('section', 0))}\n"
+)
 
 sys_message_input = """
 You translate English prose from the 16th and 17th centuries into clear,
@@ -85,13 +57,12 @@ messages = [
     HumanMessage(
         content=(
             "Translate this passage into contemporary English:\n\n"
-            f"<passage>\n{chunks[0].page_content}\n</passage>"
+            f"<passage>\n{passage.page_content}\n</passage>"
         )
     )
 ]
 
 # load the model
 model = ChatOpenAI(model="gpt-4.1-mini")
-
 response = model.invoke(messages)
 print(response.content)
