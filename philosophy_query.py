@@ -50,17 +50,14 @@ Return only the modern English translation and any essential notes.
 
 
 class ModernizedWork(BaseModel):
-    Chapter:int=Field(description="The chapter of the text")
-    Section:int=Field(description="The section of the text")
-    Author:str=Field(description="The author of the work")
-    Title:str=Field(description="The title of the work")
     TranslatedPassage:str=Field(description="21st century version of the prose")
+    Notes:str|None=Field(default=None, description="Notes attributed to this passage")
 
 def retrieve(question:str, num_chunks_to_retrieve: int = 8, filters: dict | None = None) -> list[Document]:
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small", dimensions=1024)
     vectorstore = PineconeVectorStore(index_name="agora", embedding=embeddings)
 
-    results = vectorstore.similarity_search(question, num_chunks_to_retrieve=num_chunks_to_retrieve, filter=filters or None)
+    results = vectorstore.similarity_search(question, k=num_chunks_to_retrieve, filter=filters or None)
     return results
 human_translation_request = "Translate this passage into contemporary English:\n\n<passage>\n{passage}\n</passage>"
 
@@ -80,12 +77,13 @@ if __name__ == "__main__":
     if not question:
         parser.error("--question cannot be empty")
 
-    # Retrieve the passage to translate. The filter narrows the search by metadata; drop it to search everything.
     results = retrieve(question)
     model = ChatOpenAI(model="gpt-4.1-mini")
     model_with_structure=model.with_structured_output(ModernizedWork)
     chain = prompt | model_with_structure
     responses = chain.batch([{"passage":result.page_content} for result in results])
 
-    for response in responses:
-        print(response.TranslatedPassage)
+    for result, response in zip(results, responses):
+        meta = result.metadata
+        print(meta["author"], meta["work"], meta["chapter"], meta.get("section"))
+        print(f"{response.TranslatedPassage}\n")
