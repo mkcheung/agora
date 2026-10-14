@@ -7,12 +7,16 @@ from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
 from chunking import chunk_paragraphs
+from config import (
+    INDEX_NAME,
+    EMBEDDING_DIMENSIONS,
+    EMBEDDING_MODEL,
+    LEGACY_ID_PREFIX
+)
 from parsers import parse_locke
 
 load_dotenv()
 
-INDEX_NAME = "agora"
-LEGACY_ID_PREFIX = "pg7370-chunk-"  # IDs from the first, metadata-less upload
 
 # One entry per work. Adding a book means adding a parser and an entry here.
 WORKS = [
@@ -56,8 +60,8 @@ if __name__ == "__main__":
 
     if args.upload:
         embeddings = OpenAIEmbeddings(
-            model="text-embedding-3-small",
-            dimensions=1024,
+            model=EMBEDDING_MODEL,
+            dimensions=EMBEDDING_DIMENSIONS,
             show_progress_bar=False,
             chunk_size=50,
             retry_min_seconds=10,
