@@ -1,0 +1,3 @@
+INDEX_NAME = 'agora'
+EMBEDDING_DIMENSIONS = 1024
+EMBEDDING_MODEL = "text-embedding-3-small"

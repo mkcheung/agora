@@ -1,5 +1,4 @@
 import re
-from typing import List, Tuple
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -22,9 +21,9 @@ def make_id(work: str, metadata: dict) -> str:
     return ":".join(parts)
 
 
-def chunk_paragraphs(paragraphs: List[Document]) -> Tuple[List[Document], List[str]]:
-    chunks: List[Document] = []
-    ids: List[str] = []
+def chunk_paragraphs(paragraphs: list[Document]) -> tuple[list[Document], list[str]]:
+    chunks: list[Document] = []
+    ids: list[str] = []
 
     for paragraph in paragraphs:
         # split_documents copies the paragraph's metadata onto every piece, which is now correct

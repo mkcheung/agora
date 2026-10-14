@@ -1,21 +1,12 @@
 import argparse
+
 from dotenv import load_dotenv
 from langchain_core.documents import Document
-from langchain_core.messages import (
-    SystemMessage,
-    HumanMessage
-)
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import (
-    ChatOpenAI,
-    OpenAIEmbeddings
-)
-from langchain_pinecone import PineconeVectorStore
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel, Field
 
-from pydantic import (
-    BaseModel,
-    Field    
-)
+from retrieval import get_vectorstore
 
 # Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
 load_dotenv()
@@ -54,11 +45,10 @@ class ModernizedWork(BaseModel):
     Notes:str|None=Field(default=None, description="Notes attributed to this passage")
 
 def retrieve(question:str, num_chunks_to_retrieve: int = 8, filters: dict | None = None) -> list[Document]:
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", dimensions=1024)
-    vectorstore = PineconeVectorStore(index_name="agora", embedding=embeddings)
-
+    vectorstore = get_vectorstore()
     results = vectorstore.similarity_search(question, k=num_chunks_to_retrieve, filter=filters or None)
     return results
+
 human_translation_request = "Translate this passage into contemporary English:\n\n<passage>\n{passage}\n</passage>"
 
 prompt = ChatPromptTemplate.from_messages(
@@ -85,5 +75,6 @@ if __name__ == "__main__":
 
     for result, response in zip(results, responses):
         meta = result.metadata
-        print(meta["author"], meta["work"], meta["chapter"], meta.get("section"))
+        print(meta["author"], meta["work"], int(meta["chapter"]), int(meta.get("section")))
         print(f"{response.TranslatedPassage}\n")
+        print(f"{response.Notes}\n")

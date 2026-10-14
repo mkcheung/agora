@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 import ebooklib
 from bs4 import BeautifulSoup
@@ -25,12 +24,12 @@ def clean(text: str) -> str:
     return " ".join(text.split())
 
 
-def parse_locke(path: str) -> List[Document]:
+def parse_locke(path: str) -> list[Document]:
     book = epub.read_epub(path)
     author = book.get_metadata("DC", "creator")[0][0]
     work = book.get_metadata("DC", "title")[0][0]
 
-    documents: List[Document] = []
+    documents: list[Document] = []
     book_label = None
 
     for item in book.get_items_of_type(ebooklib.ITEM_DOCUMENT):
