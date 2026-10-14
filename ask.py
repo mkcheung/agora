@@ -4,10 +4,8 @@ from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 from retrieval import (
-    get_vectorstore,
     retrieve
 ) 
 from typing import List 
@@ -67,14 +65,25 @@ def assemble_context(docs: List[Document])->str:
     context:str = ''
     for doc in docs:
         meta = doc.metadata
-        section = f"§{int(meta.get("section"))}" if meta.get("section") else ''
-        context += f"Author: {meta["author"]}, Work: {meta["work"]}, Ch. {int(meta["chapter"])}, {section}\n{doc.page_content}\n\n"
+        section = f", §{int(meta.get("section"))}" if meta.get("section") else ''
+        context += f"Author: {meta["author"]}, Work: {meta["work"]}, Ch. {int(meta["chapter"])}{section}\n{doc.page_content}\n\n"
 
     return context
 
+
+class Citation(BaseModel):
+    author: str = Field(description="Author, copied exactly from the passage header")
+    work: str = Field(description="Work title, copied exactly from the passage header")
+    chapter: int = Field(description="Chapter number from the header")
+    section: int | None = Field(default=None, description="Section number from the header; omit if the header has none")
+    quote: str = Field(description="Short quotation copied exactly from that passage")
+
+
 class ResearchedResponse(BaseModel):
     Answer:str=Field(description="The researched answer to the user's question")
-    Citations:str|None=Field(default=None, description="Citations from the passage supporting the answer")
+    Citations:list[Citation] = Field(default_factory=list, description="Passages cited in the answer; empty if the passages do not answer the question")
+
+
 
 human_question_request = """
 Answer the user's question:\n\n<question>\n{question}\n</question>
@@ -107,3 +116,5 @@ if __name__ == "__main__":
     response = chain.invoke({"question":question, "context":context})
 
     print(response.Answer)
+    for c in response.Citations:
+        print(f"- {c.author}, {c.work}, Ch. {c.chapter}" + (f", §{c.section}" if c.section else "") + f': "{c.quote}"')
