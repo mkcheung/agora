@@ -1,6 +1,7 @@
 import argparse
 
 from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
@@ -63,7 +64,7 @@ if __name__ == "__main__":
         parser.error("--question cannot be empty")
 
     results = retrieve(question)
-    model = ChatOpenAI(model="gpt-4.1-mini")
+    model = init_chat_model("gpt-4.1-mini")
     model_with_structure=model.with_structured_output(ModernizedWork)
     chain = prompt | model_with_structure
     responses = chain.batch([{"passage":result.page_content} for result in results])
