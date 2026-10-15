@@ -3,19 +3,16 @@ import argparse
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from retrieval import (
-    get_vectorstore,
-    retrieve
-) 
+
+from retrieval import retrieve
 
 # Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
 load_dotenv()
 
 # Directive for model behavior - Translate Prose
 sys_message_input = """
-You translate English prose from the 16th and 17th centuries into clear,
+You translate historical philosophical prose in English into clear,
 natural contemporary English for a general reader.
 
 Preserve the original meaning, tone, argument, and level of certainty.
@@ -57,7 +54,7 @@ prompt = ChatPromptTemplate.from_messages(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--question", action="store", help="question about lockes work", required=True)
+    parser.add_argument("--question", action="store", help="find passages in the indexed philosophical works", required=True)
     args = parser.parse_args()
     question = args.question.strip()
     if not question:
@@ -71,7 +68,7 @@ if __name__ == "__main__":
 
     for result, response in zip(results, responses):
         meta = result.metadata
-        print(meta["author"], meta["work"], int(meta["chapter"]), int(meta.get("section")))
+        print(meta["author"], meta["work"], meta["locator"])
         print(f"{response.TranslatedPassage}\n")
         if response.Notes:
             print(f"{response.Notes}\n")

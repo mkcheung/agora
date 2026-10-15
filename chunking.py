@@ -1,24 +1,14 @@
-import re
-
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
-
-
-def slugify(text: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+CHUNK_SIZE = 2000
+CHUNK_OVERLAP = 200
+splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
 
 
 def make_id(work: str, metadata: dict) -> str:
-    # The ID is the address: work : chapter : section : paragraph : chunk.
-    # Section is omitted for works that have none, so the same function serves every book.
-    parts = [slugify(work), f"ch{metadata['chapter']:02d}"]
-    if "section" in metadata:
-        parts.append(f"s{metadata['section']:03d}")
-    parts.append(f"p{metadata['paragraph']:03d}")
-    parts.append(f"c{metadata['chunk']}")
-    return ":".join(parts)
+    # Blocks already identify the source, logical work, XHTML file and position.
+    return f"{metadata['block_id']}:c{metadata['chunk']}"
 
 
 def chunk_paragraphs(paragraphs: list[Document]) -> tuple[list[Document], list[str]]:
@@ -32,12 +22,15 @@ def chunk_paragraphs(paragraphs: list[Document]) -> tuple[list[Document], list[s
         for index, piece in enumerate(pieces):
             piece.metadata["chunk"] = index
             piece.metadata["chunk_count"] = len(pieces)
+            passage_id = make_id(piece.metadata["work"], piece.metadata)
+            piece.metadata["passage_id"] = passage_id
+            piece.id = passage_id
             chunks.append(piece)
-            ids.append(make_id(piece.metadata["work"], piece.metadata))
+            ids.append(passage_id)
 
     # Two records sharing an ID would silently overwrite each other in Pinecone, so fail loudly here.
-    duplicates = {i for i in ids if ids.count(i) > 1}
-    assert not duplicates, f"Duplicate IDs: {sorted(duplicates)[:5]}"
+    if len(set(ids)) != len(ids):
+        raise ValueError("Duplicate passage IDs in prepared records")
     return chunks, ids
 
 

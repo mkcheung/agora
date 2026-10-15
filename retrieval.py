@@ -1,14 +1,16 @@
 from functools import cache
+
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 
-from config import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, INDEX_NAME
+from config import ACTIVE_NAMESPACE, EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, INDEX_NAME
+
 
 @cache
-def get_vectorstore() -> PineconeVectorStore:
+def get_vectorstore(namespace: str = ACTIVE_NAMESPACE) -> PineconeVectorStore:
     embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL, dimensions=EMBEDDING_DIMENSIONS)
-    return PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings)
+    return PineconeVectorStore(index_name=INDEX_NAME, embedding=embeddings, namespace=namespace)
 
 def retrieve(question:str, num_chunks_to_retrieve: int = 8, filters: dict | None = None) -> list[Document]:
     vectorstore = get_vectorstore()
