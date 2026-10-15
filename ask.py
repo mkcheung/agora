@@ -1,4 +1,5 @@
 import argparse
+import re
 
 from dotenv import load_dotenv
 from langchain_core.documents import Document
@@ -41,8 +42,9 @@ does not appear in a header.
 
 Second, list every passage you cited. For each one give its citation and
 a short quotation, copied exactly from that passage, that supports the
-claim. Quote only what the passage actually says. Do not list passages
-you did not use.
+claim. Quote only what the passage actually says. Each quotation must be
+one contiguous excerpt: do not use ellipses and do not join separate
+parts of a passage. Do not list passages you did not use.
 
 If the passages only partly answer the question, answer the part they
 support and say plainly what they leave unanswered. If they do not
@@ -70,6 +72,7 @@ def assemble_context(docs: List[Document])->str:
 
     return context
 
+CitationKey = tuple[str, str, int, int | None]
 
 class Citation(BaseModel):
     author: str = Field(description="Author, copied exactly from the passage header")
@@ -83,7 +86,47 @@ class ResearchedResponse(BaseModel):
     Answer:str=Field(description="The researched answer to the user's question")
     Citations:list[Citation] = Field(default_factory=list, description="Passages cited in the answer; empty if the passages do not answer the question")
 
+def build_verification_index(vectordocs: List[Document])->dict[CitationKey, list[str]]:
+    verification_index = {}
+    for doc in vectordocs:
+        meta = doc.metadata
+        section = int(meta.get("section")) if meta.get("section") else None
+        key = (meta["author"], meta["work"], int(meta["chapter"]), section)
+        verification_index.setdefault(key, []).append(doc.page_content)
+    return verification_index
 
+def normalize(text: str) -> str:
+    text = text.replace("“", '"').replace("”", '"').replace("’", "'").replace("‘", "'")
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+def quote_fragments(quote: str) -> list[str]:
+    # The model often joins separate excerpts with an ellipsis; each piece must appear in the passage.
+    parts = (part.strip(" .,;") for part in re.split(r"\.\.\.|…", quote))
+    return [part for part in parts if len(part) > 3]
+
+def verify_citations(verification_index:dict[CitationKey, list[str]], incoming_citations:List[Citation]):
+
+    results = []
+    for citation in incoming_citations:
+        section = int(citation.section) if citation.section else None
+        verification_key = (citation.author, citation.work, int(citation.chapter), section)
+        verification_quotes = verification_index.get(verification_key)
+
+        if verification_quotes is None:
+            status = "unknown passage"
+        elif any(all(normalize(fragment) in normalize(passage) for fragment in quote_fragments(citation.quote)) for passage in verification_quotes):
+            status = "ok"
+        else:
+            status = "quote not found"
+
+        results.append(
+            {
+                "citation": citation,
+                "status": status
+            }
+        )
+
+    return results
 
 human_question_request = """
 Answer the user's question:\n\n<question>\n{question}\n</question>
@@ -115,6 +158,19 @@ if __name__ == "__main__":
     chain = prompt | model_with_structure
     response = chain.invoke({"question":question, "context":context})
 
-    print(response.Answer)
-    for c in response.Citations:
-        print(f"- {c.author}, {c.work}, Ch. {c.chapter}" + (f", §{c.section}" if c.section else "") + f': "{c.quote}"')
+    verification_index = build_verification_index(results)
+    citation_verification_results = verify_citations(verification_index, response.Citations)
+
+    failed = [ citation_verification_result for citation_verification_result in citation_verification_results if citation_verification_result['status'] != 'ok']
+
+    if failed:
+        print("Not all quotations could be verified for the following answer: ")
+        print(response.Answer)
+        for failed_quote in failed:
+            print(f"- {failed_quote['citation'].quote} - Status: {failed_quote['status']}")
+    else:
+        print(response.Answer)
+        for c in response.Citations:
+            print(f"- {c.author}, {c.work}, Ch. {c.chapter}" + (f", §{c.section}" if c.section else "") + f': "{c.quote}"')
+
+
