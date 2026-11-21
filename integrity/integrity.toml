@@ -1,0 +1,174 @@
+# integrity/integrity.toml: module defaults (committed)
+
+[paths]
+data_dir = "integrity_data"                   # relative to project_root
+
+[seams]
+project_root = ".."                           # relative to this file
+corpus_provider = "ingest:prepare_records"    # seam 1: read-only, offline
+agora_entrypoint = "ask:answer_question"      # seam 2: implemented in ask.py
+
+[models]
+drafter = "openai:gpt-4.1"                    # writes cards; a different family from Agora's answer model
+attribution = "anthropic:claude-opus-5-5"     # advisory speaker check; a different family from the drafter
+judge = "openai:gpt-4.1"                      # grades answers; MUST be a different family from Agora's answer model
+temperature = 0                               # not sent to models that reject it
+agora_model_hint = "anthropic:claude-sonnet-5-5"  # used until a result reports info.model
+tracing = "inherit"                           # "inherit" | "off" ("off" sets LANGSMITH_TRACING=false)
+
+[build]
+default_count = 24
+default_false_premise = 6                     # false-premise cards added per build (Phase A7)
+max_attempts_per_slot = 3
+neighbor_exclusion = 1                        # paragraphs within +-1 of a used paragraph are not sampled
+context_chars = 300
+attribution_advisory = true
+
+[checks]
+quote_min_words = 6
+quote_max_words = 40                     # raised from 25: the drafting model overshoots (real run: 71 of 78 discards)
+leakage_ngram = 5
+three_points_min_chars = 800
+require_author_in_question = true
+max_question_chars = 300
+
+[eligibility]
+content_types = ["prose"]
+min_chars = 600
+max_chars = 4000
+min_stopword_ratio = 0.2
+max_latin_markers = 5
+max_quoted_fraction = 0.3
+max_question_fraction = 0.5
+max_money_terms = 2
+max_bible_refs = 2
+
+# Per-author overrides of [eligibility] and [checks] keys.
+[authors."John Stuart Mill"]
+min_chars = 800
+
+[authors."Thomas Hobbes"]
+max_quoted_fraction = 0.5          # the transcriber turned Hobbes's italics into quotation marks
+
+[authors."Edmund Burke"]
+quoted_text_is_other_speaker = true
+three_points_min_chars = 900
+
+# Paragraph-level exclusions found by the survey (section 8). Phase A1 resolves and verifies every entry.
+[[eligibility.denylist]]
+work_id = "pg7370:main"
+locator_regex = "^Book II, Chapter 19, §(233|237|238),"
+reason = "Barclay's words (English translation), not Locke's"
+
+[[eligibility.denylist]]
+work_id = "pg10615:main"
+locator_regex = "^Volume 1, THE EPISTLE TO THE READER, paragraph 24 \\("
+reason = "editorial addition made after Locke's death (Sixth Edition note)"
+
+[[eligibility.denylist]]
+work_id = "pg7370:main"
+locator_regex = "^Book II, Chapter 15, §172, paragraph 5 \\("
+reason = "editorial note ('Another copy corrected by Mr. Locke'); also caught by EL-quote-led and EL-len"
+
+[[eligibility.denylist]]
+work_id = "pg3207:main"
+locator_regex = "^Part III, Chapter 42, (Cardinal Bellarmines Books|The (First|Second|Third|Fourth) Book|Texts For The Infallibility)"
+reason = "Hobbes summarises Bellarmine's arguments (ch. 42); the sections where Hobbes replies at length stay eligible and are flagged by the Bellarmine name cue"
+
+[[eligibility.denylist]]
+work_id = "pg3207:main"
+locator_regex = "^Part II, Chapter 29, Private Judgement Of Good and Evill, paragraph 6 \\("
+reason = "lists seditious doctrines that Hobbes quotes in order to reject them; other ch. 29 paragraphs rely on the 'seditious' cue (SF3)"
+
+[[eligibility.denylist]]
+work_id = "pg15679:reflections"
+locator_regex = "paragraph 136 \\("
+reason = "irony ('a king is but a man, a queen is but a woman...'); the drafter cannot be trusted to label it"
+
+# Survey seeds resolved WITHOUT a denylist entry (each verified against the real paragraphs, plan section 8.3):
+#  - Locke Treatise Hooker / Acosta / King James quotation paragraphs (sec. 5, 15, 60-61, 74, 90-94, 102, 111,
+#    134-136, 200): every quoted paragraph is already excluded by EL-quote-led ("(*"), EL-ibid, EL-introducer
+#    ("His words are,", "tells them thus,", "a little after,") or EL-len. Locke's own paragraphs in the same
+#    sections stay eligible.
+#  - Locke Essay Book II ch. 16 sec. 6 number table and heading stubs: EL-len + EL-lang + EL-midsentence.
+#  - Burke Army Estimates editor's introduction and Fox/Sheridan/Pitt paragraphs: EL-editorial, EL-len, and
+#    the paragraph_in allowlist of the burke-army-estimates stratum.
+#  - Burke Reflections p116 (Price's words): EL-quote-led + EL-quoted.
+#  - Hobbes ch. 15 "the Foole" (Part I ch. 15 para 4) is not denied; the "Foole" name cue raises SF3.
+
+[sampling]
+author_weights = {}                # empty means equal shares for every author
+
+# Strata (section 7.3): first matching rule wins. Each weight is a share of that author's quota.
+[[strata]]
+name = "locke-front-matter"
+work_id = ["pg7370:main", "pg10615:main"]
+locator_regex = "^(PREFACE|Volume 1, THE EPISTLE TO THE READER)"
+weight = 0.06
+[[strata]]
+name = "locke-treatise"
+work_id = ["pg7370:main"]
+weight = 0.47
+[[strata]]
+name = "locke-essay"
+work_id = ["pg10615:main"]
+weight = 0.47
+[[strata]]
+name = "hobbes-christian-commonwealth-and-darkness"
+work_id = ["pg3207:main"]
+locator_regex = "^Part (III|IV),"
+weight = 0.28
+[[strata]]
+name = "hobbes-man-and-commonwealth"
+work_id = ["pg3207:main"]          # Introduction, Parts I-II, Review
+weight = 0.72
+[[strata]]
+name = "mill-utilitarianism"
+work_id = ["pg11224:main"]
+weight = 0.3334
+[[strata]]
+name = "mill-liberty"
+work_id = ["pg34901:main"]
+weight = 0.3333
+[[strata]]
+name = "mill-subjection"
+work_id = ["pg27083:main"]
+weight = 0.3333
+[[strata]]
+name = "burke-reflections-constitution"
+work_id = ["pg15679:reflections"]
+paragraph_in = ["293-415"]
+weight = 0.25
+[[strata]]
+name = "burke-reflections-core"
+work_id = ["pg15679:reflections"]
+weight = 0.60
+[[strata]]
+name = "burke-army-estimates"
+work_id = ["pg15679:substance_of_the_speech"]
+paragraph_in = ["3-37", 39, 41]
+weight = 0.08
+[[strata]]
+name = "burke-nabob"
+work_id = ["pg15679:nabob_of_arcots_private_debts"]
+paragraph_in = [7, 18, "76-79", 133, 139]
+weight = 0.07
+
+[publish]
+holdout_percent = 15
+
+[review]
+sensitive_terms = []               # optional: words that add a soft flag for the owner (section 7.6, SF6)
+
+[quiz]
+min_cards = 10
+timeout_s = 180
+retries = 1
+strict = false
+
+[judge]
+granularity = "per_item"           # "per_item" | "per_card"
+consistency_sample = 0.2
+controls_per_run = 4
+max_retries = 2
+prompts = { coverage = "judge_coverage_v1", claims = "judge_claims_v1", support = "judge_support_v1", refusal = "judge_refusal_v1", premise = "judge_premise_v1" }

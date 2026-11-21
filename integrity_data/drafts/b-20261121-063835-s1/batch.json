@@ -1,0 +1,861 @@
+{
+  "batch_id": "b-20261121-063835-s1",
+  "seed": 1,
+  "created_at": "2026-11-21T06:41:25Z",
+  "options": {
+    "count": null,
+    "false_premise": null,
+    "sources": null,
+    "authors": null,
+    "dry_run": false
+  },
+  "config": {
+    "paths": {
+      "data_dir": "integrity_data"
+    },
+    "seams": {
+      "project_root": "/Users/marscheung/SideProjects/agora",
+      "corpus_provider": "ingest:prepare_records",
+      "agora_entrypoint": "ask:answer_question"
+    },
+    "models": {
+      "drafter": "openai:gpt-4.1",
+      "attribution": "anthropic:claude-opus-5-5",
+      "judge": "openai:gpt-4.1",
+      "temperature": 0.0,
+      "agora_model_hint": "anthropic:claude-sonnet-5-5",
+      "tracing": "inherit"
+    },
+    "build": {
+      "default_count": 24,
+      "default_false_premise": 6,
+      "max_attempts_per_slot": 3,
+      "neighbor_exclusion": 1,
+      "context_chars": 300,
+      "attribution_advisory": true
+    },
+    "checks": {
+      "quote_min_words": 6,
+      "quote_max_words": 40,
+      "leakage_ngram": 5,
+      "three_points_min_chars": 800,
+      "require_author_in_question": true,
+      "max_question_chars": 300
+    },
+    "eligibility": {
+      "content_types": [
+        "prose"
+      ],
+      "min_chars": 600,
+      "max_chars": 4000,
+      "min_stopword_ratio": 0.2,
+      "max_latin_markers": 5,
+      "max_quoted_fraction": 0.3,
+      "max_question_fraction": 0.5,
+      "max_money_terms": 2,
+      "max_bible_refs": 2,
+      "denylist": [
+        {
+          "work_id": "pg7370:main",
+          "locator_regex": "^Book II, Chapter 19, §(233|237|238),",
+          "block_id": null,
+          "reason": "Barclay's words (English translation), not Locke's"
+        },
+        {
+          "work_id": "pg10615:main",
+          "locator_regex": "^Volume 1, THE EPISTLE TO THE READER, paragraph 24 \\(",
+          "block_id": null,
+          "reason": "editorial addition made after Locke's death (Sixth Edition note)"
+        },
+        {
+          "work_id": "pg7370:main",
+          "locator_regex": "^Book II, Chapter 15, §172, paragraph 5 \\(",
+          "block_id": null,
+          "reason": "editorial note ('Another copy corrected by Mr. Locke'); also caught by EL-quote-led and EL-len"
+        },
+        {
+          "work_id": "pg3207:main",
+          "locator_regex": "^Part III, Chapter 42, (Cardinal Bellarmines Books|The (First|Second|Third|Fourth) Book|Texts For The Infallibility)",
+          "block_id": null,
+          "reason": "Hobbes summarises Bellarmine's arguments (ch. 42); the sections where Hobbes replies at length stay eligible and are flagged by the Bellarmine name cue"
+        },
+        {
+          "work_id": "pg3207:main",
+          "locator_regex": "^Part II, Chapter 29, Private Judgement Of Good and Evill, paragraph 6 \\(",
+          "block_id": null,
+          "reason": "lists seditious doctrines that Hobbes quotes in order to reject them; other ch. 29 paragraphs rely on the 'seditious' cue (SF3)"
+        },
+        {
+          "work_id": "pg15679:reflections",
+          "locator_regex": "paragraph 136 \\(",
+          "block_id": null,
+          "reason": "irony ('a king is but a man, a queen is but a woman...'); the drafter cannot be trusted to label it"
+        }
+      ]
+    },
+    "authors": {
+      "John Stuart Mill": {
+        "content_types": null,
+        "min_chars": 800,
+        "max_chars": null,
+        "min_stopword_ratio": null,
+        "max_latin_markers": null,
+        "max_quoted_fraction": null,
+        "max_question_fraction": null,
+        "max_money_terms": null,
+        "max_bible_refs": null,
+        "quote_min_words": null,
+        "quote_max_words": null,
+        "leakage_ngram": null,
+        "three_points_min_chars": null,
+        "require_author_in_question": null,
+        "max_question_chars": null,
+        "quoted_text_is_other_speaker": null
+      },
+      "Thomas Hobbes": {
+        "content_types": null,
+        "min_chars": null,
+        "max_chars": null,
+        "min_stopword_ratio": null,
+        "max_latin_markers": null,
+        "max_quoted_fraction": 0.5,
+        "max_question_fraction": null,
+        "max_money_terms": null,
+        "max_bible_refs": null,
+        "quote_min_words": null,
+        "quote_max_words": null,
+        "leakage_ngram": null,
+        "three_points_min_chars": null,
+        "require_author_in_question": null,
+        "max_question_chars": null,
+        "quoted_text_is_other_speaker": null
+      },
+      "Edmund Burke": {
+        "content_types": null,
+        "min_chars": null,
+        "max_chars": null,
+        "min_stopword_ratio": null,
+        "max_latin_markers": null,
+        "max_quoted_fraction": null,
+        "max_question_fraction": null,
+        "max_money_terms": null,
+        "max_bible_refs": null,
+        "quote_min_words": null,
+        "quote_max_words": null,
+        "leakage_ngram": null,
+        "three_points_min_chars": 900,
+        "require_author_in_question": null,
+        "max_question_chars": null,
+        "quoted_text_is_other_speaker": true
+      }
+    },
+    "sampling": {
+      "author_weights": {}
+    },
+    "strata": [
+      {
+        "name": "locke-front-matter",
+        "work_id": [
+          "pg7370:main",
+          "pg10615:main"
+        ],
+        "locator_regex": "^(PREFACE|Volume 1, THE EPISTLE TO THE READER)",
+        "paragraph_in": null,
+        "weight": 0.06
+      },
+      {
+        "name": "locke-treatise",
+        "work_id": [
+          "pg7370:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.47
+      },
+      {
+        "name": "locke-essay",
+        "work_id": [
+          "pg10615:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.47
+      },
+      {
+        "name": "hobbes-christian-commonwealth-and-darkness",
+        "work_id": [
+          "pg3207:main"
+        ],
+        "locator_regex": "^Part (III|IV),",
+        "paragraph_in": null,
+        "weight": 0.28
+      },
+      {
+        "name": "hobbes-man-and-commonwealth",
+        "work_id": [
+          "pg3207:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.72
+      },
+      {
+        "name": "mill-utilitarianism",
+        "work_id": [
+          "pg11224:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.3334
+      },
+      {
+        "name": "mill-liberty",
+        "work_id": [
+          "pg34901:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.3333
+      },
+      {
+        "name": "mill-subjection",
+        "work_id": [
+          "pg27083:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.3333
+      },
+      {
+        "name": "burke-reflections-constitution",
+        "work_id": [
+          "pg15679:reflections"
+        ],
+        "locator_regex": null,
+        "paragraph_in": [
+          "293-415"
+        ],
+        "weight": 0.25
+      },
+      {
+        "name": "burke-reflections-core",
+        "work_id": [
+          "pg15679:reflections"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.6
+      },
+      {
+        "name": "burke-army-estimates",
+        "work_id": [
+          "pg15679:substance_of_the_speech"
+        ],
+        "locator_regex": null,
+        "paragraph_in": [
+          "3-37",
+          39,
+          41
+        ],
+        "weight": 0.08
+      },
+      {
+        "name": "burke-nabob",
+        "work_id": [
+          "pg15679:nabob_of_arcots_private_debts"
+        ],
+        "locator_regex": null,
+        "paragraph_in": [
+          7,
+          18,
+          "76-79",
+          133,
+          139
+        ],
+        "weight": 0.07
+      }
+    ],
+    "publish": {
+      "holdout_percent": 15
+    },
+    "review": {
+      "sensitive_terms": []
+    },
+    "quiz": {
+      "min_cards": 10,
+      "timeout_s": 180,
+      "retries": 1,
+      "strict": false
+    },
+    "judge": {
+      "granularity": "per_item",
+      "consistency_sample": 0.2,
+      "controls_per_run": 4,
+      "max_retries": 2,
+      "prompts": {
+        "coverage": "judge_coverage_v1",
+        "claims": "judge_claims_v1",
+        "support": "judge_support_v1",
+        "refusal": "judge_refusal_v1",
+        "premise": "judge_premise_v1"
+      }
+    }
+  },
+  "corpus_version": "epub-v1-04b8672ea20df6c7",
+  "slots": [
+    {
+      "slot": "locke-front-matter#1",
+      "stratum": "locke-front-matter",
+      "bin": 0,
+      "author": "John Locke",
+      "work": "An Essay Concerning Humane Understanding, Volume 1 / MDCXC, Based on the 2nd Edition, Books 1 and 2",
+      "locator": "Volume 1, THE EPISTLE TO THE READER, paragraph 2 (edition-specific)",
+      "position": 1,
+      "candidates_tried": [
+        {
+          "block_id": "pg10615:main:7cbe5ada8ea9a1edfe5e",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "locke-treatise#1",
+      "stratum": "locke-treatise",
+      "bin": 0,
+      "author": "John Locke",
+      "work": "Second Treatise of Government",
+      "locator": "Book II, Chapter 7, §79, paragraph 3 (edition-specific)",
+      "position": 98,
+      "candidates_tried": [
+        {
+          "block_id": "pg7370:main:7e4eaf0e0edcc85f29ee",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "locke-treatise#2",
+      "stratum": "locke-treatise",
+      "bin": 1,
+      "author": "John Locke",
+      "work": "Second Treatise of Government",
+      "locator": "Book II, Chapter 19, §226, paragraph 22 (edition-specific)",
+      "position": 282,
+      "candidates_tried": [
+        {
+          "block_id": "pg7370:main:31598adab8070df2b23f",
+          "result": "discarded",
+          "failed": [
+            "HC4"
+          ]
+        },
+        {
+          "block_id": "pg7370:main:21607895b23e249043b2",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "locke-essay#1",
+      "stratum": "locke-essay",
+      "bin": 0,
+      "author": "John Locke",
+      "work": "An Essay Concerning Humane Understanding, Volume 1 / MDCXC, Based on the 2nd Edition, Books 1 and 2",
+      "locator": "Volume 1, Book I, Chapter 2, §24, paragraph 24 (edition-specific)",
+      "position": 58,
+      "candidates_tried": [
+        {
+          "block_id": "pg10615:main:2cb45ecb148bf72ae297",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg10615:main:4cf60e56feb38755d3fc",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg10615:main:65aa7e0b112ceb241074",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "locke-essay#2",
+      "stratum": "locke-essay",
+      "bin": 1,
+      "author": "John Locke",
+      "work": "An Essay Concerning Humane Understanding, Volume 1 / MDCXC, Based on the 2nd Edition, Books 1 and 2",
+      "locator": "Volume 1, Book II, Chapter 21, §2, paragraph 2 (edition-specific)",
+      "position": 437,
+      "candidates_tried": [
+        {
+          "block_id": "pg10615:main:2abbcd2dd0efaba2f2c1",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "locke-essay#3",
+      "stratum": "locke-essay",
+      "bin": 2,
+      "author": "John Locke",
+      "work": "An Essay Concerning Humane Understanding, Volume 1 / MDCXC, Based on the 2nd Edition, Books 1 and 2",
+      "locator": "Volume 1, Book II, Chapter 21, §74, paragraph 78 (edition-specific)",
+      "position": 513,
+      "candidates_tried": [
+        {
+          "block_id": "pg10615:main:2e07b95573361c0eefe8",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-utilitarianism#1",
+      "stratum": "mill-utilitarianism",
+      "bin": 0,
+      "author": "John Stuart Mill",
+      "work": "Utilitarianism",
+      "locator": "Chapter 2, paragraph 1 (edition-specific)",
+      "position": 6,
+      "candidates_tried": [
+        {
+          "block_id": "pg11224:main:5a793c2e4a183b800b2e",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-utilitarianism#2",
+      "stratum": "mill-utilitarianism",
+      "bin": 1,
+      "author": "John Stuart Mill",
+      "work": "Utilitarianism",
+      "locator": "Chapter 3, paragraph 11 (edition-specific)",
+      "position": 41,
+      "candidates_tried": [
+        {
+          "block_id": "pg11224:main:9506156230a7fb10f79e",
+          "result": "discarded",
+          "failed": [
+            "HC5",
+            "HC6"
+          ]
+        },
+        {
+          "block_id": "pg11224:main:205f265f11e1d9e35b6d",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg11224:main:de904e44ad9515cc60ad",
+          "result": "discarded",
+          "failed": [
+            "HC4"
+          ]
+        }
+      ]
+    },
+    {
+      "slot": "mill-liberty#1",
+      "stratum": "mill-liberty",
+      "bin": 0,
+      "author": "John Stuart Mill",
+      "work": "On Liberty",
+      "locator": "Chapter 1, paragraph 16 (edition-specific)",
+      "position": 15,
+      "candidates_tried": [
+        {
+          "block_id": "pg34901:main:db2991331c4e43c70f1d",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-liberty#2",
+      "stratum": "mill-liberty",
+      "bin": 1,
+      "author": "John Stuart Mill",
+      "work": "On Liberty",
+      "locator": "Chapter 5, paragraph 4 (edition-specific)",
+      "position": 103,
+      "candidates_tried": [
+        {
+          "block_id": "pg34901:main:ac4031722ff9a349f53d",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-subjection#1",
+      "stratum": "mill-subjection",
+      "bin": 0,
+      "author": "John Stuart Mill",
+      "work": "The Subjection of Women",
+      "locator": "Chapter 3, paragraph 5 (edition-specific)",
+      "position": 45,
+      "candidates_tried": [
+        {
+          "block_id": "pg27083:main:decb1258a2399a09d12e",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-subjection#2",
+      "stratum": "mill-subjection",
+      "bin": 1,
+      "author": "John Stuart Mill",
+      "work": "The Subjection of Women",
+      "locator": "Chapter 3, paragraph 17 (edition-specific)",
+      "position": 57,
+      "candidates_tried": [
+        {
+          "block_id": "pg27083:main:237e4c7b93509a2d5d70",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-christian-commonwealth-and-darkness#1",
+      "stratum": "hobbes-christian-commonwealth-and-darkness",
+      "bin": 0,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part III, Chapter 42, The Old Testament, When Made Canonicall, paragraph 40 (edition-specific)",
+      "position": 1010,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:c9aa8712ad2bcd93d721",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg3207:main:862f1a72c0aace4e7c03",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-christian-commonwealth-and-darkness#2",
+      "stratum": "hobbes-christian-commonwealth-and-darkness",
+      "bin": 1,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part IV, Chapter 45, Wax Candles, And Torches Lighted, paragraph 37 (edition-specific)",
+      "position": 1203,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:82e80c5a41ad81747b7a",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-man-and-commonwealth#1",
+      "stratum": "hobbes-man-and-commonwealth",
+      "bin": 0,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part I, Chapter 4, Abuses Of Speech, paragraph 4 (edition-specific)",
+      "position": 38,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:613baa49f665bfc59dd2",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-man-and-commonwealth#2",
+      "stratum": "hobbes-man-and-commonwealth",
+      "bin": 1,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part I, Chapter 15, Justice Of Men, And Justice Of Actions What, paragraph 10 (edition-specific)",
+      "position": 347,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:f3c850d45c7155bba7d3",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-man-and-commonwealth#3",
+      "stratum": "hobbes-man-and-commonwealth",
+      "bin": 2,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part II, Chapter 27, A Crime What, paragraph 3 (edition-specific)",
+      "position": 626,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:267c1208e9fe18a73f30",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-man-and-commonwealth#4",
+      "stratum": "hobbes-man-and-commonwealth",
+      "bin": 3,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part II, Chapter 30, The Use Of Universities, paragraph 17 (edition-specific)",
+      "position": 746,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:7e88a318f8af47b6a59e",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-constitution#1",
+      "stratum": "burke-reflections-constitution",
+      "bin": 0,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 332 (edition-specific)",
+      "position": 331,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:f78361743316fbb4f288",
+          "result": "discarded",
+          "failed": [
+            "HC4"
+          ]
+        },
+        {
+          "block_id": "pg15679:reflections:e3fb74e10460a8584c54",
+          "result": "discarded",
+          "failed": [
+            "HC10",
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg15679:reflections:8b0cf80e0fbb835d7b73",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-constitution#2",
+      "stratum": "burke-reflections-constitution",
+      "bin": 1,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 406 (edition-specific)",
+      "position": 405,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:d85be104afbe4264d86a",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-core#1",
+      "stratum": "burke-reflections-core",
+      "bin": 0,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 21 (edition-specific)",
+      "position": 20,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:ba05fd496a7715ab347b",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-core#2",
+      "stratum": "burke-reflections-core",
+      "bin": 1,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 112 (edition-specific)",
+      "position": 111,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:24cf82c96aafcfc2c0cb",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-core#3",
+      "stratum": "burke-reflections-core",
+      "bin": 2,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 164 (edition-specific)",
+      "position": 163,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:2e8d2c0463755b308b0c",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-core#4",
+      "stratum": "burke-reflections-core",
+      "bin": 3,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 417 (edition-specific)",
+      "position": 416,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:602abf4c0579317e2140",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "locke-treatise#fp1",
+      "stratum": "locke-treatise",
+      "bin": 0,
+      "author": "John Locke",
+      "work": "Second Treatise of Government",
+      "locator": "Book II, Chapter 14, §165, paragraph 7 (edition-specific)",
+      "position": 207,
+      "candidates_tried": [
+        {
+          "block_id": "pg7370:main:4b23f24ddbe621831481",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg7370:main:6f17112a20563481ebe8",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-utilitarianism#fp1",
+      "stratum": "mill-utilitarianism",
+      "bin": 0,
+      "author": "John Stuart Mill",
+      "work": "Utilitarianism",
+      "locator": "Chapter 4, paragraph 5 (edition-specific)",
+      "position": 46,
+      "candidates_tried": [
+        {
+          "block_id": "pg11224:main:fc2376f933905c518425",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg11224:main:637d547b9e72321fc244",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "mill-liberty#fp1",
+      "stratum": "mill-liberty",
+      "bin": 0,
+      "author": "John Stuart Mill",
+      "work": "On Liberty",
+      "locator": "Chapter 4, paragraph 7 (edition-specific)",
+      "position": 85,
+      "candidates_tried": [
+        {
+          "block_id": "pg34901:main:2ca711d53b625afe57c6",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-man-and-commonwealth#fp1",
+      "stratum": "hobbes-man-and-commonwealth",
+      "bin": 0,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part II, Chapter 18, The Power And Honour Of Subjects Vanisheth In The Presence Of The Power Soveraign, paragraph 18 (edition-specific)",
+      "position": 431,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:46b6fe11285c962c81f5",
+          "result": "discarded",
+          "failed": [
+            "HC4"
+          ]
+        },
+        {
+          "block_id": "pg3207:main:510ca624ba6f5b573185",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "hobbes-man-and-commonwealth#fp2",
+      "stratum": "hobbes-man-and-commonwealth",
+      "bin": 1,
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "locator": "Part II, Chapter 27, Excuses Against The Author, paragraph 28 (edition-specific)",
+      "position": 651,
+      "candidates_tried": [
+        {
+          "block_id": "pg3207:main:2e824718f91bf8346f44",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "burke-reflections-constitution#fp1",
+      "stratum": "burke-reflections-constitution",
+      "bin": 0,
+      "author": "Edmund Burke",
+      "work": "Reflections on the Revolution in France",
+      "locator": "Volume III, REFLECTIONS ON THE REVOLUTION IN FRANCE., paragraph 331 (edition-specific)",
+      "position": 330,
+      "candidates_tried": [
+        {
+          "block_id": "pg15679:reflections:0a77027f5d5a1fa91312",
+          "result": "accepted"
+        }
+      ]
+    }
+  ],
+  "drafter_model": "openai:gpt-4.1",
+  "attribution_model": "anthropic:claude-opus-5-5",
+  "prompt_hashes": {
+    "drafter_v1": "3cf98ed1bcdb081c6694ec6060463989c0db7a8ceb1c34861e2cf090e3a21efd",
+    "drafter_false_premise_v1": "cd37a10d9b63f957f0294936dff28aae3d3e2657038472180e78d0a7b3fea2fe",
+    "attribution_v1": "7c0c23fe1c304ec39cf99c63e511f8b74210253a9cca52848b94d71b280c7086"
+  },
+  "timings": {
+    "elapsed_s": 173.934
+  },
+  "discard_counts": {
+    "HC4": 4,
+    "HC5": 8,
+    "HC6": 1,
+    "HC10": 1
+  },
+  "status": "complete",
+  "filled": 29,
+  "unfilled": [
+    "mill-utilitarianism#2"
+  ],
+  "warnings": []
+}

@@ -1,6 +1,8 @@
 import argparse
+import hashlib
 import json
 import re
+from pathlib import Path
 
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
@@ -8,6 +10,7 @@ from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
+from config import ACTIVE_NAMESPACE
 from retrieval import retrieve
 
 # Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
@@ -167,6 +170,63 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+ANSWER_MODEL = "anthropic:claude-sonnet-5-5"
+RETRIEVED_FIELDS = ("author", "work", "locator", "passage_id", "block_id", "work_id", "corpus_version")
+
+
+class AttemptCounter:
+    """Wraps the chain so callers can see how many model attempts invoke_with_verification made."""
+
+    def __init__(self, chain):
+        self.chain = chain
+        self.calls = 0
+
+    def invoke(self, request):
+        self.calls += 1
+        return self.chain.invoke(request)
+
+
+def answer_question(question: str, num_chunks_to_retrieve: int = 8, filters: dict | None = None) -> dict:
+    """Answer one question and return the answer together with the evidence behind it.
+
+    The CLI below prints this result, and the integrity quiz grades it (INTEGRITY_MODULE_PLAN.md, section 4.2),
+    so both go through the same retrieve -> answer -> verify steps.
+    """
+    question = question.strip()
+    if not question:
+        raise ValueError("question cannot be empty")
+
+    docs = retrieve(question, num_chunks_to_retrieve=num_chunks_to_retrieve, filters=filters)
+    context = assemble_context(docs)
+    model = init_chat_model(ANSWER_MODEL).with_structured_output(ResearchedResponse, method="json_schema")
+    chain = AttemptCounter(prompt | model)
+    response, checks = invoke_with_verification(chain, question, context, build_verification_index(docs))
+
+    # Pinecone returns numbers as floats (chapter 2.0), so chapter and section are converted back to int.
+    retrieved = []
+    for rank, doc in enumerate(docs, start=1):
+        meta = doc.metadata
+        item = {key: meta[key] for key in RETRIEVED_FIELDS if key in meta}
+        item.update({key: int(meta[key]) for key in ("chapter", "section") if key in meta})
+        retrieved.append({"rank": rank, **item, "text": doc.page_content})
+
+    return {
+        "answer": response.Answer,
+        "citations": [citation.model_dump() for citation in response.Citations],
+        "retrieved": retrieved,
+        "self_check": [{"passage_id": r["citation"].passage_id, "quote": r["citation"].quote, "status": r["status"]}
+                       for r in checks],
+        "attempts": chain.calls,
+        "info": {
+            "model": ANSWER_MODEL,
+            "namespace": ACTIVE_NAMESPACE,
+            "k": num_chunks_to_retrieve,
+            "filters": filters,
+            "code_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        },
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--question", action="store", help="question about the indexed philosophical works", required=True)
@@ -175,24 +235,17 @@ if __name__ == "__main__":
     if not question:
         parser.error("--question cannot be empty")
 
-    results = retrieve(question)
-    context = assemble_context(results)
-    model = init_chat_model("anthropic:claude-sonnet-5-5")
-    model_with_structure=model.with_structured_output(ResearchedResponse, method="json_schema")
-    chain = prompt | model_with_structure
-    verification_index = build_verification_index(results)
-    response, citation_verification_results = invoke_with_verification(chain, question, context, verification_index)
-
-    failed = [ citation_verification_result for citation_verification_result in citation_verification_results if citation_verification_result['status'] != 'ok']
+    result = answer_question(question)
+    failed = [check for check in result["self_check"] if check["status"] != "ok"]
 
     if failed:
         print("Not all quotations could be verified for the following answer: ")
-        print(response.Answer)
+        print(result["answer"])
         for failed_quote in failed:
-            print(f"- {failed_quote['citation'].quote} - Status: {failed_quote['status']}")
+            print(f"- {failed_quote['quote']} - Status: {failed_quote['status']}")
     else:
-        print(response.Answer)
-        for c in response.Citations:
-            print(f'- {c.author}, {c.work}, {c.locator}: "{c.quote}"')
+        print(result["answer"])
+        for c in result["citations"]:
+            print(f'- {c["author"]}, {c["work"]}, {c["locator"]}: "{c["quote"]}"')
 
 

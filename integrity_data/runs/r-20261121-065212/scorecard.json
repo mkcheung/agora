@@ -1,0 +1,805 @@
+{
+  "schema": 1,
+  "run": {
+    "run_id": "r-20261121-065212",
+    "started_at": "2026-11-21T06:52:12Z",
+    "finished_at": "2026-11-21T06:56:58Z",
+    "sheet_version": "v001",
+    "grader_version": "g-b447cd",
+    "judge_model": "openai:gpt-4.1",
+    "mechanical_only": false,
+    "entrypoint": "ask:answer_question",
+    "namespace": "epub-v1-04b8672ea20df6c7",
+    "agora_model": "anthropic:claude-sonnet-5-5",
+    "k": 8,
+    "git_commit": "d5c5845a6044178c6a16eac0272de1003a53a937",
+    "git_dirty": true,
+    "textnorm_version": 1,
+    "module_version": "0.1.0",
+    "source_run": null,
+    "files_dir": "integrity_data/runs/r-20261121-065212"
+  },
+  "sheet": {
+    "version": "v001",
+    "cards": 3,
+    "holdout": 1,
+    "content_sha256": "9f70dc8d87be170a7d2ff7288308b7b6a97fbedac5ac204f5f97c7e02760003c",
+    "whole_sheet": {
+      "cards": 32,
+      "holdout": 3
+    }
+  },
+  "main": {
+    "cards": 2,
+    "scored": 2,
+    "errors": 0,
+    "judged": 2,
+    "answerable": 2,
+    "found": {
+      "n": 2,
+      "d": 2
+    },
+    "rank_distribution": {
+      "1": 2
+    },
+    "mrr": 1.0,
+    "near_hits": 0,
+    "evidence_recall": {
+      "mean": 1.0,
+      "n": 2
+    },
+    "complete": {
+      "n": 4.0,
+      "d": 4
+    },
+    "coverage_counts": {
+      "covered": 4,
+      "partial": 0,
+      "absent": 0,
+      "unverified": 0,
+      "judge_error": 0
+    },
+    "faithful": {
+      "n": 24,
+      "d": 24
+    },
+    "support_counts": {
+      "supported": 24,
+      "not_supported": 0,
+      "contradicted": 0,
+      "unverified": 0,
+      "judge_error": 0,
+      "uncited": 3,
+      "unmapped": 0
+    },
+    "answers_with_unsupported": 0,
+    "citations": {
+      "cited_block": {
+        "n": 2,
+        "d": 2
+      },
+      "quotes_verified": {
+        "n": 7,
+        "d": 7
+      },
+      "trivial": 0,
+      "invalid_ids": 0,
+      "label_mismatches": 0,
+      "no_citations": 0,
+      "self_check_disagreements": 0
+    },
+    "behaviour": {
+      "wrongful_refusals": 0,
+      "premise_corrected": {
+        "n": 0,
+        "d": 0
+      }
+    },
+    "fully_passing": {
+      "n": 0,
+      "d": 2
+    }
+  },
+  "holdout": {
+    "cards": 1,
+    "scored": 1,
+    "errors": 0,
+    "judged": 1,
+    "answerable": 1,
+    "found": {
+      "n": 1,
+      "d": 1
+    },
+    "rank_distribution": {
+      "4": 1
+    },
+    "mrr": 0.25,
+    "near_hits": 0,
+    "evidence_recall": {
+      "mean": 1.0,
+      "n": 1
+    },
+    "complete": {
+      "n": 2.0,
+      "d": 2
+    },
+    "coverage_counts": {
+      "covered": 2,
+      "partial": 0,
+      "absent": 0,
+      "unverified": 0,
+      "judge_error": 0
+    },
+    "faithful": {
+      "n": 27,
+      "d": 29
+    },
+    "support_counts": {
+      "supported": 27,
+      "not_supported": 0,
+      "contradicted": 2,
+      "unverified": 0,
+      "judge_error": 0,
+      "uncited": 20,
+      "unmapped": 0
+    },
+    "answers_with_unsupported": 1,
+    "citations": {
+      "cited_block": {
+        "n": 0,
+        "d": 1
+      },
+      "quotes_verified": {
+        "n": 0,
+        "d": 0
+      },
+      "trivial": 0,
+      "invalid_ids": 0,
+      "label_mismatches": 0,
+      "no_citations": 1,
+      "self_check_disagreements": 0
+    },
+    "behaviour": {
+      "wrongful_refusals": 0,
+      "premise_corrected": {
+        "n": 0,
+        "d": 0
+      }
+    },
+    "fully_passing": {
+      "n": 0,
+      "d": 1
+    }
+  },
+  "by_author": {
+    "John Stuart Mill": {
+      "found": {
+        "n": 1,
+        "d": 1
+      },
+      "complete": {
+        "n": 2.0,
+        "d": 2
+      },
+      "faithful": {
+        "n": 20,
+        "d": 20
+      },
+      "scored": 1
+    },
+    "Thomas Hobbes": {
+      "found": {
+        "n": 1,
+        "d": 1
+      },
+      "complete": {
+        "n": 2.0,
+        "d": 2
+      },
+      "faithful": {
+        "n": 4,
+        "d": 4
+      },
+      "scored": 1
+    }
+  },
+  "by_work": {
+    "Leviathan": {
+      "found": {
+        "n": 1,
+        "d": 1
+      },
+      "complete": {
+        "n": 2.0,
+        "d": 2
+      },
+      "faithful": {
+        "n": 4,
+        "d": 4
+      },
+      "scored": 1
+    },
+    "The Subjection of Women": {
+      "found": {
+        "n": 1,
+        "d": 1
+      },
+      "complete": {
+        "n": 2.0,
+        "d": 2
+      },
+      "faithful": {
+        "n": 20,
+        "d": 20
+      },
+      "scored": 1
+    }
+  },
+  "health": {
+    "label": "UNTRUSTED",
+    "trusted": false,
+    "reasons": [
+      "C2 failed on c-a70b550a2e: omitted point kp2 judged partial",
+      "C2 failed on c-ea568980b9: omitted point kp2 judged partial",
+      "C3 failed on c-45a72f1918: fabricated claim judged ['contradicted']",
+      "C2 failed on c-b102241c55: omitted point kp2 judged partial"
+    ],
+    "controls": {
+      "must_pass_total": 24,
+      "must_pass_passed": 20,
+      "informational_total": 4,
+      "informational_passed": 4,
+      "failed": [
+        {
+          "control_id": "ctl-C2-c-a70b550a2e",
+          "kind": "C2",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": false,
+          "detail": "omitted point kp2 judged partial"
+        },
+        {
+          "control_id": "ctl-C2-c-ea568980b9",
+          "kind": "C2",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": false,
+          "detail": "omitted point kp2 judged partial"
+        },
+        {
+          "control_id": "ctl-C3-c-45a72f1918",
+          "kind": "C3",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": false,
+          "detail": "fabricated claim judged ['contradicted']"
+        },
+        {
+          "control_id": "ctl-C2-c-b102241c55",
+          "kind": "C2",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": false,
+          "detail": "omitted point kp2 judged partial"
+        }
+      ],
+      "evals": [
+        {
+          "control_id": "ctl-C1-c-a70b550a2e",
+          "kind": "C1",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C2-c-a70b550a2e",
+          "kind": "C2",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": false,
+          "detail": "omitted point kp2 judged partial"
+        },
+        {
+          "control_id": "ctl-C3-c-a70b550a2e",
+          "kind": "C3",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C4-c-a70b550a2e",
+          "kind": "C4",
+          "card_id": "c-a70b550a2e",
+          "must_pass": false,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C5-c-a70b550a2e",
+          "kind": "C5",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C6-c-a70b550a2e",
+          "kind": "C6",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C7-c-a70b550a2e",
+          "kind": "C7",
+          "card_id": "c-a70b550a2e",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C1-c-ea568980b9",
+          "kind": "C1",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C2-c-ea568980b9",
+          "kind": "C2",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": false,
+          "detail": "omitted point kp2 judged partial"
+        },
+        {
+          "control_id": "ctl-C3-c-ea568980b9",
+          "kind": "C3",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C4-c-ea568980b9",
+          "kind": "C4",
+          "card_id": "c-ea568980b9",
+          "must_pass": false,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C5-c-ea568980b9",
+          "kind": "C5",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C6-c-ea568980b9",
+          "kind": "C6",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C7-c-ea568980b9",
+          "kind": "C7",
+          "card_id": "c-ea568980b9",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C1-c-45a72f1918",
+          "kind": "C1",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C2-c-45a72f1918",
+          "kind": "C2",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C3-c-45a72f1918",
+          "kind": "C3",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": false,
+          "detail": "fabricated claim judged ['contradicted']"
+        },
+        {
+          "control_id": "ctl-C4-c-45a72f1918",
+          "kind": "C4",
+          "card_id": "c-45a72f1918",
+          "must_pass": false,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C5-c-45a72f1918",
+          "kind": "C5",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C6-c-45a72f1918",
+          "kind": "C6",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C7-c-45a72f1918",
+          "kind": "C7",
+          "card_id": "c-45a72f1918",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C1-c-b102241c55",
+          "kind": "C1",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C2-c-b102241c55",
+          "kind": "C2",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": false,
+          "detail": "omitted point kp2 judged partial"
+        },
+        {
+          "control_id": "ctl-C3-c-b102241c55",
+          "kind": "C3",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C4-c-b102241c55",
+          "kind": "C4",
+          "card_id": "c-b102241c55",
+          "must_pass": false,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C5-c-b102241c55",
+          "kind": "C5",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C6-c-b102241c55",
+          "kind": "C6",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "control_id": "ctl-C7-c-b102241c55",
+          "kind": "C7",
+          "card_id": "c-b102241c55",
+          "must_pass": true,
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    "evidence": {
+      "checked": 269,
+      "rejected": 1
+    },
+    "claim_coverage": 0.948,
+    "claim_coverage_low": false,
+    "judge_errors": 0,
+    "consistency": {
+      "sampled": 12,
+      "agreed": 12,
+      "pct": 100.0
+    },
+    "calibration": null,
+    "grader_version": "g-b447cd"
+  },
+  "trust": {
+    "label": "UNTRUSTED",
+    "trusted": false,
+    "reasons": [
+      "C2 failed on c-a70b550a2e: omitted point kp2 judged partial",
+      "C2 failed on c-ea568980b9: omitted point kp2 judged partial",
+      "C3 failed on c-45a72f1918: fabricated claim judged ['contradicted']",
+      "C2 failed on c-b102241c55: omitted point kp2 judged partial"
+    ]
+  },
+  "warnings": [],
+  "never_retrieved": [],
+  "vs_previous": null,
+  "cards": [
+    {
+      "card_id": "c-00ea774417",
+      "author": "John Stuart Mill",
+      "work": "The Subjection of Women",
+      "type": "passage",
+      "holdout": false,
+      "expected_behavior": "answer",
+      "error": null,
+      "judged": true,
+      "block_hit": true,
+      "block_rank": 1,
+      "near_hit": null,
+      "evidence_found": 2,
+      "evidence_total": 2,
+      "cited_block": true,
+      "quotes_verified": 6,
+      "quotes_total": 6,
+      "trivial": 0,
+      "invalid_ids": 0,
+      "label_mismatches": 0,
+      "no_citations": false,
+      "self_check_disagreements": 0,
+      "declined": false,
+      "corpus_version_mismatch": false,
+      "coverage": {
+        "covered": 2,
+        "partial": 0,
+        "absent": 0,
+        "unverified": 0,
+        "judge_error": 0
+      },
+      "points_total": 2,
+      "points_score": 2.0,
+      "claims": {
+        "total": 20,
+        "supported": 20,
+        "not_supported": 0,
+        "contradicted": 0,
+        "unverified": 0,
+        "judge_error": 0,
+        "uncited": 1,
+        "unmapped": 0
+      },
+      "claims_unsupported_any": false,
+      "wrongful_refusal": false,
+      "extraction_coverage": 0.9667,
+      "extraction_failure": false,
+      "refusal_ok": true,
+      "premise_corrected": null,
+      "fully_passing": false,
+      "failed_checks": [
+        "J3 uncited_claims"
+      ],
+      "failures": [
+        {
+          "check": "J3 uncited_claims",
+          "detail": "1 substantive claim(s) cite no passage"
+        }
+      ],
+      "detail": {
+        "question": "What does Mill claim about the abilities of women who have ruled as queens or regents?",
+        "premise": null,
+        "expected": {
+          "author": "John Stuart Mill",
+          "work": "The Subjection of Women",
+          "locator": "Chapter 3, paragraph 5 (edition-specific)"
+        },
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "author": "John Stuart Mill",
+            "work": "The Subjection of Women",
+            "locator": "Chapter 3, paragraph 5 (edition-specific)"
+          },
+          {
+            "rank": 2,
+            "author": "John Stuart Mill",
+            "work": "The Subjection of Women",
+            "locator": "Chapter 3, paragraph 6 (edition-specific)"
+          },
+          {
+            "rank": 3,
+            "author": "John Stuart Mill",
+            "work": "The Subjection of Women",
+            "locator": "Chapter 3, paragraph 6 (edition-specific)"
+          },
+          {
+            "rank": 4,
+            "author": "John Stuart Mill",
+            "work": "The Subjection of Women",
+            "locator": "Note footnote_2_1 to Chapter 3, paragraph 5 (edition-specific)"
+          },
+          {
+            "rank": 5,
+            "author": "John Stuart Mill",
+            "work": "The Subjection of Women",
+            "locator": "Chapter 3, paragraph 7 (edition-specific)"
+          }
+        ],
+        "answer": "Mill claims that women who have ruled have shown real ability, and he treats this as evidence about women's capacity for government. He gives the following points.\n\n1. He calls it fact, not inference, that a woman can be a Queen Elizabeth, a Deborah or a Joan of Arc (John Stuart Mill, The Subjection of Women, Chapter 3, paragraph 4 (edition-specific)).\n\n2. Reigning queens are far fewer than kings, but a far larger proportion of them have shown talents for rule. Many of them reigned in difficult periods. They were often noted for firmness and vigour as well as intelligence, which is the opposite of the conventional picture of women. Adding regents and viceroys of provinces makes the list of eminent women rulers very long (John Stuart Mill, The Subjection of Women, Chapter 3, paragraph 5 (edition-specific)).\n\n3. Mill rejects the quip that under queens men govern. He says most great queens have been great by their own talents for government. They kept the supreme direction of affairs in their own hands. If they listened to good advisers, that shows their judgment fitted them for the great questions of government (John Stuart Mill, The Subjection of Women, Chapter 3, paragraph 6 (edition-specific)).\n\n4. He gives examples of women governing for male rulers. Charles V made princesses of his family Governors of the Netherlands, and both ruled very successfully. One of them, Margaret of Austria, was one of the ablest politicians of the age (John Stuart Mill, The Subjection of Women, Chapter 3, paragraph 6 (edition-specific)).\n\n5. In a footnote about Hindoo (Hindu) governments, Mill says that when such a principality is well governed, in three cases out of four it is under a woman's rule. This comes from his long official knowledge of those governments, and he calls the finding unexpected to him. Women there cannot reign but are legal regents during an heir's minority. He calls their example of the natural capacity of women for government very striking, given that they have been secluded and uneducated in politics (John Stuart Mill, The Subjection of Women, Note footnote_2_1 to Chapter 3, paragraph 5 (edition-specific)).\n\n6. He concludes that ladies of reigning families are the only women allowed men's range of interests and freedom of development. In their case no inferiority is found. Wherever and to the degree that women's capacities for government have been tried, they have been found adequate (John Stuart Mill, The Subjection of Women, Chapter 3, paragraph 7 (edition-specific))."
+      }
+    },
+    {
+      "card_id": "c-0da216ba13",
+      "author": "John Stuart Mill",
+      "work": "The Subjection of Women",
+      "type": "passage",
+      "holdout": true,
+      "expected_behavior": "answer",
+      "error": null,
+      "judged": true,
+      "block_hit": true,
+      "block_rank": 4,
+      "near_hit": null,
+      "evidence_found": 2,
+      "evidence_total": 2,
+      "cited_block": false,
+      "quotes_verified": 0,
+      "quotes_total": 0,
+      "trivial": 0,
+      "invalid_ids": 0,
+      "label_mismatches": 0,
+      "no_citations": true,
+      "self_check_disagreements": 0,
+      "declined": false,
+      "corpus_version_mismatch": false,
+      "coverage": {
+        "covered": 2,
+        "partial": 0,
+        "absent": 0,
+        "unverified": 0,
+        "judge_error": 0
+      },
+      "points_total": 2,
+      "points_score": 2.0,
+      "claims": {
+        "total": 29,
+        "supported": 27,
+        "not_supported": 0,
+        "contradicted": 2,
+        "unverified": 0,
+        "judge_error": 0,
+        "uncited": 20,
+        "unmapped": 0
+      },
+      "claims_unsupported_any": true,
+      "wrongful_refusal": false,
+      "extraction_coverage": 0.8927,
+      "extraction_failure": false,
+      "refusal_ok": true,
+      "premise_corrected": null,
+      "fully_passing": false,
+      "failed_checks": [
+        "J3 contradicted",
+        "J3 contradicted",
+        "M9 no_citations",
+        "J3 uncited_claims"
+      ],
+      "failures": []
+    },
+    {
+      "card_id": "c-0f68ac47dd",
+      "author": "Thomas Hobbes",
+      "work": "Leviathan",
+      "type": "passage",
+      "holdout": false,
+      "expected_behavior": "answer",
+      "error": null,
+      "judged": true,
+      "block_hit": true,
+      "block_rank": 1,
+      "near_hit": null,
+      "evidence_found": 2,
+      "evidence_total": 2,
+      "cited_block": true,
+      "quotes_verified": 1,
+      "quotes_total": 1,
+      "trivial": 0,
+      "invalid_ids": 0,
+      "label_mismatches": 0,
+      "no_citations": false,
+      "self_check_disagreements": 0,
+      "declined": false,
+      "corpus_version_mismatch": false,
+      "coverage": {
+        "covered": 2,
+        "partial": 0,
+        "absent": 0,
+        "unverified": 0,
+        "judge_error": 0
+      },
+      "points_total": 2,
+      "points_score": 2.0,
+      "claims": {
+        "total": 4,
+        "supported": 4,
+        "not_supported": 0,
+        "contradicted": 0,
+        "unverified": 0,
+        "judge_error": 0,
+        "uncited": 2,
+        "unmapped": 0
+      },
+      "claims_unsupported_any": false,
+      "wrongful_refusal": false,
+      "extraction_coverage": 0.9849,
+      "extraction_failure": false,
+      "refusal_ok": true,
+      "premise_corrected": null,
+      "fully_passing": false,
+      "failed_checks": [
+        "J3 uncited_claims"
+      ],
+      "failures": [
+        {
+          "check": "J3 uncited_claims",
+          "detail": "2 substantive claim(s) cite no passage"
+        }
+      ],
+      "detail": {
+        "question": "What does Hobbes identify as one way people misuse language to deceive themselves?",
+        "premise": null,
+        "expected": {
+          "author": "Thomas Hobbes",
+          "work": "Leviathan",
+          "locator": "Part I, Chapter 4, Abuses Of Speech, paragraph 4 (edition-specific)"
+        },
+        "top_retrieved": [
+          {
+            "rank": 1,
+            "author": "Thomas Hobbes",
+            "work": "Leviathan",
+            "locator": "Part I, Chapter 4, Abuses Of Speech, paragraph 4 (edition-specific)"
+          },
+          {
+            "rank": 2,
+            "author": "Thomas Hobbes",
+            "work": "Leviathan",
+            "locator": "Part II, Chapter 25, Counsell What, paragraph 1 (edition-specific)"
+          },
+          {
+            "rank": 3,
+            "author": "John Locke",
+            "work": "An Essay Concerning Humane Understanding, Volume 1 / MDCXC, Based on the 2nd Edition, Books 1 and 2",
+            "locator": "Volume 1, Book II, Chapter 33, §18, paragraph 18 (edition-specific)"
+          },
+          {
+            "rank": 4,
+            "author": "John Locke",
+            "work": "An Essay Concerning Humane Understanding, Volume 1 / MDCXC, Based on the 2nd Edition, Books 1 and 2",
+            "locator": "Volume 1, Book II, Chapter 13, §28, paragraph 32 (edition-specific)"
+          },
+          {
+            "rank": 5,
+            "author": "Thomas Hobbes",
+            "work": "Leviathan",
+            "locator": "Part II, Chapter 27, Wisedome, paragraph 17 (edition-specific)"
+          }
+        ],
+        "answer": "Hobbes lists four \"Abuses\" of speech, and the first is the one by which people deceive themselves. It happens when men \"register their thoughts wrong\" because the meaning of their words keeps shifting (the \"inconstancy of the signification\" of words). They then record as their conceptions things they never conceived, and so deceive themselves (Thomas Hobbes, Leviathan, Part I, Chapter 4, Abuses Of Speech, paragraph 4 (edition-specific)). By contrast, Hobbes says the second abuse, using words metaphorically (in a sense other than the one they were ordained for), deceives others rather than oneself (Thomas Hobbes, Leviathan, Part I, Chapter 4, Abuses Of Speech, paragraph 4 (edition-specific))."
+      }
+    }
+  ]
+}

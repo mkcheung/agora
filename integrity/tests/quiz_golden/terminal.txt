@@ -1,0 +1,27 @@
+INTEGRITY QUIZ  r-20261121-093000   sheet v001 (5 cards, 1 sealed)   grader g-golden   judge openai:gpt-4.1
+Agora ask:answer_question · anthropic:claude-sonnet-5-5 · k=8 · ns epub-v1-04b8672ea20df6c7 · git 1a2b3c4 (dirty)
+
+HEADLINE (4 main cards)
+  Found      right paragraph retrieved           2/3      67%
+  Complete   key points covered                  5/7      71%
+  Faithful   claims supported by citations       8/9      89%
+  Fully passing cards                            1/3
+  Errors 1 · Wrongful refusals 0 · Answers with no citations 0
+
+RETRIEVAL   hit@8 2/3 · evidence recall 67% · MRR 0.67 · near hits 0
+CITATIONS   cited right paragraph 2/3 · quotes verified 8/8 · trivial 0 · invented IDs 0 · label mismatches 0
+COVERAGE    covered 5 · partial 0 · absent 2
+SUPPORT     supported 8 · not supported 1 · contradicted 0 · unverified 0 · uncited claims 0 · unmapped citations 0
+
+BY AUTHOR        Found    Complete  Faithful
+  J. S. Mill     0/1            0%      100%
+  John Locke     1/1          100%       75%
+  Thomas Hobbes  1/1          100%      100%
+
+SEALED (1)  Found 1/1 · Complete 100% · Faithful 67%
+
+GRADER HEALTH  controls 12/12 must-pass ✓ · evidence rejected 0/121 · claim coverage 0.98 · trust TRUSTED
+               consistency 12/12 (100%) · owner agreement: not yet calibrated (grader g-golden)
+warning: never retrieved during this run (is the book uploaded to the active namespace?): On Liberty
+
+Files: integrity_data/runs/r-20261121-093000/scorecard.md, failures.md, scorecard.json
