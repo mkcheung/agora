@@ -1,2 +1,4 @@
 {"run_id":"r-20261121-065212","sheet_version":"v001","grader_version":"g-b447cd","headline":{"found":{"n":2,"d":2},"complete":{"n":4.0,"d":4},"faithful":{"n":24,"d":24},"fully_passing":{"n":0,"d":2},"errors":0,"trust":"UNTRUSTED"}}
 {"run_id":"r-20261121-070028","sheet_version":"v001","grader_version":"g-b447cd","headline":{"found":{"n":2,"d":2},"complete":{"n":4.0,"d":4},"faithful":{"n":24,"d":24},"fully_passing":{"n":2,"d":2},"errors":0,"trust":"TRUSTED"}}
+{"run_id":"r-20261121-070826","sheet_version":"v001","grader_version":"g-b447cd","headline":{"found":{"n":22,"d":23},"complete":{"n":54.0,"d":58},"faithful":{"n":286,"d":301},"fully_passing":{"n":8,"d":29},"errors":0,"trust":"TRUSTED"}}
+{"run_id":"r-20261121-172125","sheet_version":"v001","grader_version":"g-eaa3d7","headline":{"found":{"n":22,"d":23},"complete":{"n":54.0,"d":58},"faithful":{"n":297,"d":304},"fully_passing":{"n":13,"d":29},"errors":0,"trust":"TRUSTED"}}

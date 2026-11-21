@@ -16,7 +16,13 @@ def _progress(event: dict[str, Any]) -> None:
         status = "ok" if event["ok"] else "ERROR"
         print(f"[{event['index']}/{event['total']}] {event['card_id']} {status} ({event['latency_s']}s)", file=sys.stderr)
     elif event["event"] == "grading_started":
-        print(f"grading {event['cards']} answers ...", file=sys.stderr)
+        print(f"grading {event['cards']} answers (this makes many judge calls and can take a while) ...", file=sys.stderr)
+    elif event["event"] == "card_graded":
+        print(f"[graded {event['index']}/{event['total']}] {event['card_id']} ({event['seconds']}s)", file=sys.stderr)
+    elif event["event"] == "control_graded":
+        print(f"[controls {event['index']}/{event['total']}] {event['kind']}", file=sys.stderr)
+    elif event["event"] == "consistency_started":
+        print(f"re-checking a sample of {event['items']} judge items for consistency ...", file=sys.stderr)
 
 
 def _finish(s: api.RunSummary) -> int:

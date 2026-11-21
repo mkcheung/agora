@@ -102,9 +102,74 @@ def test_support_evidence_rules():
     q[4] = sup("supported", k[0].chunk_ids[0], "every man has")                         # only 3 words
     q[5] = sup("contradicted", "not:a:passage", k[1].quote)                              # passage id not offered
     q[6] = sup("supported", k[2].chunk_ids[0], "this text is not in the passage at all")  # not verbatim
+    # the two unverifiable verdicts (3 words, not verbatim) each get one correction attempt, queued after the batch
+    q[7:7] = [sup("supported", k[0].chunk_ids[0], "still only three"),
+              sup("supported", k[2].chunk_ids[0], "still not in any passage at all")]
     out = make(FakeModelClient(q)).grade_card(card, result)
-    assert [s["verdict"] for s in out.judged["support"]] == ["unverified"] * 3
-    assert [s["model_verdict"] for s in out.judged["support"]] == ["supported", "contradicted", "supported"]
+    recs = out.judged["support"]
+    # an unknown passage id with a span that IS verbatim in a provided passage is a mislabel, not an invention: verified
+    assert [s["verdict"] for s in recs] == ["unverified", "contradicted", "unverified"]
+    assert recs[1]["passage_id"] == k[1].chunk_ids[0] and recs[1]["passage_id_corrected_from"] == "not:a:passage"
+    assert [bool(s.get("retried")) for s in recs] == [True, False, True]
+
+
+def test_unverified_support_evidence_gets_one_correction_and_can_recover():
+    card, result = card_result()
+    q = full_queue(card, result)
+    k = card.key_points
+    q[4] = sup("supported", k[0].chunk_ids[0], "words the passage never contains anywhere")
+    q.insert(7, sup("supported", k[0].chunk_ids[0], k[0].quote))          # the corrected reply
+    fake = FakeModelClient(q)
+    out = make(fake).grade_card(card, result)
+    first = out.judged["support"][0]
+    assert first["verdict"] == "supported" and first["status"] == "ok" and first["retried"] is True
+    retry_call = [c for c in fake.calls if c["purpose"] == "judge_support"][3]
+    assert "<verification_failure>" in retry_call["user"] and "words the passage never contains" in retry_call["user"]
+    assert len([c for c in fake.calls if c["purpose"] == "judge_support"]) == 4   # 3 claims + exactly one retry
+
+
+def test_a_correction_can_conclude_not_supported():
+    card, result = card_result()
+    q = full_queue(card, result)
+    q[4] = sup("supported", card.key_points[0].chunk_ids[0], "invented words not in any passage whatsoever")
+    q.insert(7, sup("not_supported"))
+    out = make(FakeModelClient(q)).grade_card(card, result)
+    assert out.judged["support"][0]["verdict"] == "not_supported" and out.judged["support"][0]["retried"] is True
+
+
+@pytest.mark.parametrize("cite", ["same passage", "(same passage)", "Same \u00a74 passage", "ibid.", "as above",
+                                  "the same paragraph", "the previous passage"])
+def test_back_references_are_recognised(cite):
+    assert jd.is_backref(cite) is True
+
+
+@pytest.mark.parametrize("cite", ["John Locke, Second Treatise, Chapter 5", "Locke", "Chapter 99, paragraph 999",
+                                  "same author different work, Chapter 4"])
+def test_real_citations_are_not_back_references(cite):
+    assert jd.is_backref(cite) is False
+
+
+def test_a_back_reference_inherits_the_previous_citation_instead_of_being_unmapped():
+    card, result = card_result()
+    sents = sentences(result["answer"])
+    cite = re.findall(r"\((?:[^()]|\([^()]*\))*\)", sents[0])[-1]
+    q = [cov(k.statement) for k in card.key_points]
+    q.append({"claims": [claim(sents[0], [cite]), claim(sents[1], ["same passage"]), claim(sents[2], ["same passage"])]})
+    q += [sup("supported", k.chunk_ids[0], k.quote) for k in card.key_points] + [REFUSE_NO]
+    out = make(FakeModelClient(q)).grade_card(card, result)
+    items = out.judged["claims"]["items"]
+    assert items[1]["cited_ids"] == items[0]["cited_ids"] and items[2]["cited_ids"] == items[0]["cited_ids"] and items[0]["cited_ids"]
+    assert not any(i["citation_unmapped"] or i["unmapped"] for i in items)
+
+
+def test_a_back_reference_with_nothing_before_it_stays_unmapped():
+    card, result = card_result()
+    sents = sentences(result["answer"])
+    q = [cov(k.statement) for k in card.key_points]
+    q.append({"claims": [claim(sents[0], ["same passage"])]})
+    q += [sup("not_supported")] + [REFUSE_NO]
+    out = make(FakeModelClient(q)).grade_card(card, result)
+    assert out.judged["claims"]["items"][0]["citation_unmapped"] is True
 
 
 def test_support_not_supported_and_contradicted_with_evidence():

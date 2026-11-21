@@ -1,0 +1,76 @@
+{
+  "run_id": "r-20261121-172125",
+  "started_at": "2026-11-21T17:21:25Z",
+  "finished_at": "2026-11-21T17:35:52Z",
+  "sheet_version": "v001",
+  "sheet_content_sha256": "9f70dc8d87be170a7d2ff7288308b7b6a97fbedac5ac204f5f97c7e02760003c",
+  "grader_version": "g-eaa3d7",
+  "judge_model": "openai:gpt-4.1",
+  "prompt_hashes": {
+    "judge_coverage_v1": "ae2b9f04ba4e10f74df47a1f726e2ef8266b8c1a64f820bfb895ba4fe8f3d685",
+    "judge_claims_v1": "a41de9629a2208996fb6c7b8ec13553e4ff33859f5c9740fc3e80ad01a6dc01f",
+    "judge_support_v1": "4a2ba6835148f8aae67d014ee8b4e9226a7da40a501946863f8ba70e70f04238",
+    "judge_refusal_v1": "95876c9b90a0c2d6aa358c71999df0170d46a5c130bc5e95077da204743b0f35",
+    "judge_premise_v1": "b88d9167c7c14f74dcf3e316408290ee54a3d85813918bdbb5911af10351c0bf"
+  },
+  "entrypoint": "ask:answer_question",
+  "namespace": null,
+  "agora_info": {
+    "model": "anthropic:claude-sonnet-5-5",
+    "namespace": "epub-v1-04b8672ea20df6c7",
+    "k": 8,
+    "filters": null,
+    "code_sha256": "f2fc67f441ca4b5b38498563bf247e922459cd713a2e987409e462f7e0515146"
+  },
+  "git_commit": "2a9a8394a6e872244e1c9f0e42f86670a55fa7ca",
+  "git_dirty": false,
+  "module_version": "0.1.0",
+  "textnorm_version": 1,
+  "options": {
+    "sheet": null,
+    "limit": null,
+    "authors": null,
+    "cards": null,
+    "agora": null,
+    "namespace": null,
+    "mechanical_only": false,
+    "resume": null,
+    "strict": false
+  },
+  "preflight": {
+    "checks": {
+      "P1": {
+        "ok": true,
+        "detail": "v001"
+      },
+      "P2": {
+        "ok": true,
+        "detail": "32 cards to run, 29 scorable non-holdout"
+      },
+      "P3": {
+        "ok": true,
+        "detail": "ask:answer_question"
+      },
+      "P4": {
+        "ok": true,
+        "detail": "openai:gpt-4.1"
+      },
+      "P5": {
+        "ok": true,
+        "detail": ""
+      },
+      "P6": {
+        "ok": true,
+        "detail": "/Users/marscheung/SideProjects/agora/integrity_data/runs"
+      },
+      "P7": {
+        "ok": true,
+        "detail": "2a9a8394a6e872244e1c9f0e42f86670a55fa7ca dirty=False"
+      }
+    },
+    "warnings": []
+  },
+  "status": "complete",
+  "timeouts": [],
+  "source_run": "r-20261121-070826"
+}

@@ -135,3 +135,44 @@ def test_no_citations_at_all_still_blocks_a_pass(sheet):
 
 def test_fixture_card_is_a_card(sheet):
     assert all(isinstance(c, Card) for c in sheet.cards)
+
+
+# --------------------------------------------------------------------------- grading progress
+
+
+def test_grading_reports_progress_for_cards_controls_and_consistency(sheet):
+    settings = qf.settings_for()
+    records = [{"card_id": c.card_id, "result": validate_result(fa._good(c.model_dump())), "error": None} for c in sheet.cards]
+    events = []
+    grade_run(sheet=sheet, cards=sheet.cards, records=records, judge=Judge.from_settings(qf.RuleJudge(), settings),
+              settings=settings, on_progress=events.append)
+    kinds = [e["event"] for e in events]
+    assert kinds[0] == "grading_started"
+    graded = [e for e in events if e["event"] == "card_graded"]
+    assert [e["index"] for e in graded] == list(range(1, len(sheet.cards) + 1))
+    assert all(e["total"] == len(sheet.cards) and e["seconds"] >= 0 for e in graded)
+    controls = [e for e in events if e["event"] == "control_graded"]
+    assert controls and controls[-1]["index"] == controls[-1]["total"] and {e["kind"] for e in controls} == set(ctl.KINDS)
+    assert kinds.index("consistency_started") > kinds.index("control_graded") > kinds.index("card_graded")
+
+
+def test_mechanical_only_grading_makes_no_consistency_event(sheet):
+    settings = qf.settings_for()
+    records = [{"card_id": c.card_id, "result": validate_result(fa._good(c.model_dump())), "error": None} for c in sheet.cards]
+    events = []
+    grade_run(sheet=sheet, cards=sheet.cards, records=records, judge=None, settings=settings, on_progress=events.append)
+    assert not any(e["event"] == "consistency_started" for e in events)
+    assert any(e["event"] == "card_graded" for e in events)
+
+
+def test_terminal_handler_prints_grading_progress(capsys):
+    from integrity.quiz import handlers
+
+    for event in ({"event": "grading_started", "cards": 32},
+                  {"event": "card_graded", "index": 12, "total": 32, "card_id": "c-1", "seconds": 4.2},
+                  {"event": "control_graded", "index": 3, "total": 28, "kind": "C2"},
+                  {"event": "consistency_started", "items": 40}):
+        handlers._progress(event)
+    err = capsys.readouterr().err
+    assert "grading 32 answers" in err and "[graded 12/32] c-1 (4.2s)" in err
+    assert "[controls 3/28] C2" in err and "sample of 40 judge items" in err

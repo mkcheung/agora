@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -50,15 +51,19 @@ def grade_run(
     index: dict[str, dict[str, Any]] = {}
     if on_progress:
         on_progress({"event": "grading_started", "cards": len(records)})
-    for rec in records:
+    for n, rec in enumerate(records, start=1):
         card = by_id.get(rec["card_id"])
         if card is None:
             continue
+        started = time.monotonic()
         g, outcome = grade_one(card, rec.get("result"), rec.get("error"), judge, qmw)
         run.grades.append(g)
         index[card.card_id] = g
         if outcome:
             replays.extend(outcome.replays)
+        if on_progress:
+            on_progress({"event": "card_graded", "index": n, "total": len(records), "card_id": card.card_id,
+                         "seconds": round(time.monotonic() - started, 1)})
     results = [r.get("result") for r in records]
     # only the works of the cards asked in this run (a --author/--limit/--cards run must not warn about the rest)
     asked = {by_id[r["card_id"]].anchor.work for r in records if r["card_id"] in by_id and r.get("result")}
@@ -66,7 +71,10 @@ def grade_run(
 
     # controls
     evals = []
-    for control in ctl.build_controls(sheet, settings.judge.controls_per_run):
+    all_controls = ctl.build_controls(sheet, settings.judge.controls_per_run)
+    for n, control in enumerate(all_controls, start=1):
+        if on_progress:
+            on_progress({"event": "control_graded", "index": n, "total": len(all_controls), "kind": control.kind})
         g, _ = grade_one(control.card, control.result, None, judge, qmw, is_control=True, control_kind=control.kind)
         g["control_id"] = control.control_id
         ev = ctl.evaluate(control, g, judged=judge is not None)
@@ -77,6 +85,8 @@ def grade_run(
     # consistency
     gv = judge.grader_version if judge else ""
     if judge is not None:
+        if on_progress:
+            on_progress({"event": "consistency_started", "items": len(replays)})
         seed = health.consistency_seed(sheet.content_sha256)
         run.consistency = health.run_consistency(replays, settings.judge.consistency_sample, seed)
         for row in run.consistency["rows"]:

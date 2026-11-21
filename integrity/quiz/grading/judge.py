@@ -167,6 +167,17 @@ def _loc_found(needle: str, hay: str) -> bool:
     return False
 
 
+_BACKREF = re.compile(
+    r"^(ibid\.?|id\.?|as above|above|"
+    r"(the )?(same|previous|preceding|prior|earlier)( [\w\u00a7.\-]+){0,3}"
+    r"( (passage|paragraph|section|source|text|citation|work|chapter))?( as above)?)$")
+
+
+def is_backref(cite: str) -> bool:
+    """A citation that points back at the previous one ("same passage", "same \u00a74 passage", "ibid.")."""
+    return bool(_BACKREF.match(cite.strip().strip("()").strip().lower().rstrip(".,;")))
+
+
 def map_citations(cited_as: list[str], retrieved: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
     """Map inline citation strings to retrieved passage ids by (work, locator) skeletons.
 
@@ -324,6 +335,7 @@ class Judge:
             rec["extraction_coverage"] = None
             return rec
         all_ok = True
+        last_ids: list[str] = []  # citations of the latest cited claim, for back-references such as "(same passage)"
         for c in res.claims:
             span = _find_esc(c.answer_span, answer) if answer_span_in(c.answer_span, answer) else None
             if span is None:
@@ -331,6 +343,12 @@ class Judge:
                 all_ok = False
                 continue
             ids, unmapped = map_citations(c.cited_as, retrieved)
+            backrefs = [u for u in unmapped if is_backref(u)]
+            if backrefs and last_ids:  # resolved to what the previous cited claim cited
+                unmapped = [u for u in unmapped if u not in backrefs]
+                ids = list(dict.fromkeys([*ids, *last_ids]))
+            if ids:
+                last_ids = ids
             items.append({"claim_id": f"cl{len(items) + 1}", "text": c.text, "answer_span": c.answer_span,
                           "span": list(span), "cited_as": c.cited_as, "kind": c.kind, "kind_judge": c.kind,
                           "cited_ids": ids, "citation_unmapped": bool(c.cited_as) and not ids,
@@ -392,13 +410,46 @@ class Judge:
                 if res.verdict == "not_supported":
                     rec.update(verdict="not_supported", status="ok")
                 else:
-                    p = next((p for p in ps if p["passage_id"] in (res.passage_id, unesc(res.passage_id))), None)
-                    ok = p is not None and span_in(res.passage_span, p["text"], MIN_PASSAGE_SPAN_WORDS)
-                    _set_ok(call, ok)
-                    rec.update(verdict=res.verdict if ok else "unverified", status="ok" if ok else "unverified", evidence_ok=ok)
+                    self._apply_evidence(rec, res, ps, call)
+                    if rec["status"] == "unverified":
+                        # the judge quoted text that is in none of the passages it was given: one correction attempt
+                        retry, rcall = self._call("support", render((c, ps), None) + self._feedback(res.passage_span),
+                                                  SupportOut, out)
+                        rec["retried"] = True
+                        if retry is not None:
+                            rec.update(model_verdict=retry.verdict, passage_id=retry.passage_id,
+                                       passage_span=retry.passage_span, reason=retry.reason)
+                            if retry.verdict == "not_supported":
+                                rec.update(verdict="not_supported", status="ok", evidence_ok=None)
+                            else:
+                                self._apply_evidence(rec, retry, ps, rcall)
             by_claim[c["claim_id"]] = rec
         out_recs = {r["claim_id"]: r for r in recs} | by_claim
         return [out_recs[c["claim_id"]] for c in claims]
+
+    @staticmethod
+    def _feedback(bad_span: str) -> str:
+        return ("\n<verification_failure>\nYour previous reply quoted a span that does not appear word for word in any "
+                "<passage> above:\n" + esc(bad_span) + "\nReply again. Copy the supporting or contradicting span exactly "
+                "from one of the provided <passage> elements and give that passage's id. If no provided passage supports "
+                "or contradicts the claim, answer not_supported.\n</verification_failure>\n")
+
+    @staticmethod
+    def _apply_evidence(rec: dict[str, Any], res: Any, ps: list[dict[str, Any]], call: dict[str, Any]) -> None:
+        """Verify a supported/contradicted verdict: its span must be verbatim in a passage the judge was given. The
+        named passage id is used first; if the judge named the wrong passage but the span is verbatim in another
+        provided passage, the evidence is valid and the id is corrected (the judge mislabelled, it did not invent)."""
+        named = next((p for p in ps if p["passage_id"] in (res.passage_id, unesc(res.passage_id))), None)
+        hit = named if named is not None and span_in(res.passage_span, named["text"], MIN_PASSAGE_SPAN_WORDS) else None
+        if hit is None:
+            hit = next((p for p in ps if span_in(res.passage_span, p["text"], MIN_PASSAGE_SPAN_WORDS)), None)
+            if hit is not None:
+                rec["passage_id_corrected_from"] = res.passage_id
+        ok = hit is not None
+        if ok:
+            rec["passage_id"] = hit["passage_id"]
+        _set_ok(call, ok)
+        rec.update(verdict=res.verdict if ok else "unverified", status="ok" if ok else "unverified", evidence_ok=ok)
 
     # ---- J4 / J5
 
