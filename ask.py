@@ -185,6 +185,12 @@ class AttemptCounter:
         self.calls += 1
         return self.chain.invoke(request)
 
+def answer_from_documents(question:str, docs):
+    context = assemble_context(docs)
+    model = init_chat_model(ANSWER_MODEL).with_structured_output(ResearchedResponse, method="json_schema")
+    chain = AttemptCounter(prompt | model)
+    response, checks = invoke_with_verification(chain, question, context, build_verification_index(docs))
+    return response, checks, chain.calls
 
 def answer_question(question: str, num_chunks_to_retrieve: int = 8, filters: dict | None = None) -> dict:
     """Answer one question and return the answer together with the evidence behind it.
@@ -197,11 +203,7 @@ def answer_question(question: str, num_chunks_to_retrieve: int = 8, filters: dic
         raise ValueError("question cannot be empty")
 
     docs = retrieve(question, num_chunks_to_retrieve=num_chunks_to_retrieve, filters=filters)
-    context = assemble_context(docs)
-    model = init_chat_model(ANSWER_MODEL).with_structured_output(ResearchedResponse, method="json_schema")
-    chain = AttemptCounter(prompt | model)
-    response, checks = invoke_with_verification(chain, question, context, build_verification_index(docs))
-
+    response, checks, attempts = answer_from_documents(question, docs)
     # Pinecone returns numbers as floats (chapter 2.0), so chapter and section are converted back to int.
     retrieved = []
     for rank, doc in enumerate(docs, start=1):
@@ -216,7 +218,7 @@ def answer_question(question: str, num_chunks_to_retrieve: int = 8, filters: dic
         "retrieved": retrieved,
         "self_check": [{"passage_id": r["citation"].passage_id, "quote": r["citation"].quote, "status": r["status"]}
                        for r in checks],
-        "attempts": chain.calls,
+        "attempts": attempts,
         "info": {
             "model": ANSWER_MODEL,
             "namespace": ACTIVE_NAMESPACE,
