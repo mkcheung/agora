@@ -148,7 +148,7 @@ def answer_philosophy_question_or_dismiss(state):
         return 'retrieve_node'
     else:
         print("---DECISION: QUESTION IS OUT OF SCOPE---")
-        return 'out of scope'
+        return 'deny'
 
 def retrieve_node(state):
     question = state["question"]
@@ -165,6 +165,13 @@ def generate(state):
         'checks': checks,
     }
 
+def deny(state):
+    messsage = f"Agora only answer questions related to philosophy. {state['reason']}"
+
+    return {
+        'response': ResearchedResponse(Answer=messsage, Citations=[])
+    }
+
 class AgentState(TypedDict):
     question: str
     is_philosophical: bool
@@ -176,6 +183,7 @@ class AgentState(TypedDict):
 
 workflow = StateGraph(AgentState)
 workflow.add_node('classify', classify)
+workflow.add_node('deny', deny)
 workflow.add_node('retrieve_node', retrieve_node)
 workflow.add_node('generate', generate)
 workflow.add_edge(START,'classify')
@@ -184,10 +192,11 @@ workflow.add_conditional_edges(
     answer_philosophy_question_or_dismiss,
     {
         'retrieve_node': 'retrieve_node',
-        'out of scope':END
+        'deny':'deny'
     }
 )
 workflow.add_edge('retrieve_node','generate')
+workflow.add_edge('deny',END)
 workflow.add_edge('generate',END)
 
 app = workflow.compile()
