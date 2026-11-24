@@ -16,7 +16,7 @@ from retrieval import retrieve
 from rich.console import Console
 from langgraph.types import Send
 import operator
-
+import langchain_tavily
 ANSWER_MODEL = "anthropic:claude-sonnet-5-5"
 
 # Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
@@ -24,6 +24,7 @@ load_dotenv()
 console = Console()
 Author = Literal["Thomas Hobbes", "John Locke", "Edmund Burke",
                  "John Stuart Mill", "Adam Smith", "Sam Harris"]
+web_search_tool = langchain_tavily.TavilySearch(max_results=3)
 
 # Directive for model behavior - Translate Prose
 sys_message_input = """
@@ -74,6 +75,9 @@ def classify(state):
         is_philosophical: bool = Field(description="True if the question is philosophical")
         authors: list[Author] = Field(default_factory=list, 
             description="Authors from the corpus that the questions names; empty if none"
+        )
+        other_thinkers: list[str] = Field(default_factory=list, 
+            description="Thinkers the question asks about who are not in the corpus"
         )
 
     print("---CALL AGENT---")
@@ -137,7 +141,7 @@ def classify(state):
         {"question":question}
     )
     
-    return {"is_philosophical": decision.is_philosophical, "reason": decision.reason, "authors": decision.authors}
+    return {"is_philosophical": decision.is_philosophical, "reason": decision.reason, "authors": decision.authors, 'other_thinkers': decision.other_thinkers}
 
 def answer_philosophy_question_or_dismiss(state):
     """
@@ -176,9 +180,111 @@ def retrieve_node(state):
     results = retrieve(question)
     return {'documents':results}
 
-def generate(state):
+def grade_documents(state):
+    """
+    Determines whether the retrueved documents are relevant to the question.
+
+    Args:
+        state (dict): The current graph state
+    
+    Returns: 
+        state (dict): Updates documents key with only filtered relevant documents
+    """
+
+    print("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
     question = state['question']
     documents = state['documents']
+    llm = ChatOpenAI(model="gpt-5.4-mini")
+
+
+    class GradeDocuments(BaseModel):
+        """Binary score for relevance check on retrieved documents."""
+        reason: str = Field(description="One sentence on what the passage is about")
+        binary_score: bool = Field(description="Relevance score True or False")
+
+    structured_llm_grader = llm.with_structured_output(GradeDocuments)
+
+    system = """You are a grader assessing relevance of a retrieved document to a user question. \n
+            If the document contains keyword(s) or semantic meaning related to the question, grade it as relevant. \n
+            Give it a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question."""
+    grade_prompt = ChatPromptTemplate.from_messages(
+        [
+            ('system', system),
+            ('human', "Retrieved document: \n\n {document} \n\n User {question}"),
+        ]
+    )
+    retrieval_grader = grade_prompt | structured_llm_grader
+
+    filtered_docs = []
+    for d in documents:
+        score = retrieval_grader.invoke(
+            {"question":question, "document": d.page_content}
+        )
+        grade = score.binary_score
+        if grade:
+            print("---GRADE: DOCUMENT RELEVANT ---")
+            filtered_docs.append(d)
+        else:
+            print("---GRADE: DOCUMENT NOT RELEVANT ---")
+
+    web_search = len(filtered_docs) < 3 or bool(state["other_thinkers"])
+    if web_search:
+        print("---web_search to execute for question: {question}---")
+
+    return {'relevant_documents': filtered_docs, 'question':question, 'web_search':web_search}
+
+def decide_to_generate(state):
+    """
+    Determines whether to conduct a web search or proceed with generation.
+
+    Args:
+        state (dict): The current graph state
+    
+    Returns:
+        str: Binary decision for next node to call
+    """
+    print("--- ASSESS GRADED DOCUMENTS ---")
+    web_search = state['web_search']
+
+    if web_search:
+        print(
+            "---DECISION: Web Search Executed---"
+        )
+        return 'web_search'
+    else:
+        print('---DECISION: GENERATE---')
+        return 'generate'
+
+def web_search(state):
+    """
+    Web search to look for more relevant documents.
+
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        state (dict): Update documents key with appended web results
+    """
+    question = state['question']
+    results = web_search_tool.invoke({'query':question})
+    web_docs = []
+    for i, r in enumerate(results["results"], start=1):
+        web_docs.append(Document(
+            page_content=r["content"],
+            metadata={
+                "author": "Web source",              # labels it as not from the corpus
+                "work": r.get("title", r["url"]),    # the page title
+                "locator": r["url"],                 # where it came from
+                "passage_id": f"web:{i}",            # a unique ID, so citations can point to it
+            },
+        ))
+    documents = state['relevant_documents'] + web_docs
+    return {'relevant_documents': documents, 'question':question}
+
+
+def generate(state):
+    question = state['question']
+    documents = state['relevant_documents']
     response, checks, _ = answer_from_documents(question, documents)
 
     return {
@@ -217,7 +323,7 @@ def modernize(state):
         {"responseAnswer": state['response'].Answer}
     )
     return {
-        'display_answer': display_answer
+        'display_answer': display_answer.content
     }
 
 def deny(state):
@@ -230,12 +336,15 @@ def deny(state):
 class AgentState(TypedDict):
     question: str
     is_philosophical: bool
+    web_search: bool
     reason: str
     messages: Annotated[list[AnyMessage], add_messages]  # appended to, never replaced
-    documents: Annotated[list[Document], operator.add]            # generate copies these from the tool's result
+    documents: Annotated[list[Document], operator.add]   # generate copies these from the tool's result
+    relevant_documents: list[Document]   # generate copies these from the tool's result
     response: ResearchedResponse | None  # generate: the answer and its citations
     checks: list[dict]                   # generate: citation self-check results
     authors: list[Author]
+    other_thinkers: list[str]
     display_answer: str   # modernize: for reading only, never graded
 
 workflow = StateGraph(AgentState)
@@ -245,6 +354,8 @@ workflow.add_node('retrieve_author', retrieve_author)
 workflow.add_node('retrieve_node', retrieve_node)
 workflow.add_node('generate', generate)
 workflow.add_node('modernize', modernize)
+workflow.add_node('grade_documents', grade_documents)
+workflow.add_node('web_search',web_search)
 workflow.add_edge(START,'classify')
 workflow.add_conditional_edges(
     'classify',
@@ -255,9 +366,18 @@ workflow.add_conditional_edges(
         'deny':'deny'
     }
 )
-workflow.add_edge('retrieve_author','generate')
-workflow.add_edge('retrieve_node','generate')
 workflow.add_edge('deny',END)
+workflow.add_edge('retrieve_author','grade_documents')
+workflow.add_edge('retrieve_node','grade_documents')
+workflow.add_conditional_edges(
+    'grade_documents',
+    decide_to_generate,
+    {
+        'web_search': 'web_search',
+        'generate': 'generate'
+    }
+)
+workflow.add_edge('web_search','generate')
 workflow.add_edge('generate','modernize')
 workflow.add_edge('modernize',END)
 
