@@ -17,6 +17,8 @@ from rich.console import Console
 from langgraph.types import Send
 import operator
 import langchain_tavily
+from langchain_core.output_parsers import StrOutputParser
+
 ANSWER_MODEL = "anthropic:claude-sonnet-5-5"
 
 # Ingestion lives in ingest.py (parsers.py + chunking.py). This file only queries the index.
@@ -141,7 +143,7 @@ def classify(state):
         {"question":question}
     )
     
-    return {"is_philosophical": decision.is_philosophical, "reason": decision.reason, "authors": decision.authors, 'other_thinkers': decision.other_thinkers}
+    return {"is_philosophical": decision.is_philosophical, "reason": decision.reason, "authors": decision.authors, 'other_thinkers': decision.other_thinkers, 'retries':0}
 
 def answer_philosophy_question_or_dismiss(state):
     """
@@ -164,7 +166,7 @@ def answer_philosophy_question_or_dismiss(state):
         if not authors:
             return 'retrieve_node'
         else:
-            return [Send("retrieve_author", {"question":state["question"], "author": author }) for author in authors ]
+            return [Send("retrieve_author", {"question":state.get("search_query") or state["question"], "author": author }) for author in authors ]
     else:
         print("---DECISION: QUESTION IS OUT OF SCOPE---")
         return 'deny'
@@ -176,7 +178,7 @@ def retrieve_author(payload):
     return {'documents':results}
 
 def retrieve_node(state):
-    question = state["question"]
+    question = state.get("search_query") or state["question"]
     results = retrieve(question)
     return {'documents':results}
 
@@ -206,7 +208,7 @@ def grade_documents(state):
 
     system = """You are a grader assessing relevance of a retrieved document to a user question. \n
             If the document contains keyword(s) or semantic meaning related to the question, grade it as relevant. \n
-            Give it a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question."""
+            Give it a binary value in boolean True or False to indicate whether the document is relevant to the question."""
     grade_prompt = ChatPromptTemplate.from_messages(
         [
             ('system', system),
@@ -215,11 +217,18 @@ def grade_documents(state):
     )
     retrieval_grader = grade_prompt | structured_llm_grader
 
-    filtered_docs = []
+    seen = {g['passage_id'] for g in state.get('grades',[])}
+    filtered_docs = list(state.get('relevant_documents', []))
+    new_grades: list[dict] = []
     for d in documents:
+        pid = d.metadata['passage_id']
+        if d.metadata['passage_id'] in seen:
+            continue
+        seen.add(pid)
         score = retrieval_grader.invoke(
             {"question":question, "document": d.page_content}
         )
+        new_grades.append({"passage_id": pid, "relevant": score.binary_score, "reason": score.reason})
         grade = score.binary_score
         if grade:
             print("---GRADE: DOCUMENT RELEVANT ---")
@@ -227,11 +236,7 @@ def grade_documents(state):
         else:
             print("---GRADE: DOCUMENT NOT RELEVANT ---")
 
-    web_search = len(filtered_docs) < 3 or bool(state["other_thinkers"])
-    if web_search:
-        print("---web_search to execute for question: {question}---")
-
-    return {'relevant_documents': filtered_docs, 'question':question, 'web_search':web_search}
+    return {'relevant_documents': filtered_docs, "grades": state.get("grades", []) + new_grades}
 
 def decide_to_generate(state):
     """
@@ -243,17 +248,17 @@ def decide_to_generate(state):
     Returns:
         str: Binary decision for next node to call
     """
-    print("--- ASSESS GRADED DOCUMENTS ---")
-    web_search = state['web_search']
+    relevant_documents = state['relevant_documents']
 
-    if web_search:
-        print(
-            "---DECISION: Web Search Executed---"
-        )
-        return 'web_search'
-    else:
-        print('---DECISION: GENERATE---')
-        return 'generate'
+    print("--- ASSESS GRADED DOCUMENTS ---")
+
+    if state["other_thinkers"]:                   
+        return "web_search"
+    if len(state["relevant_documents"]) >= 3:     
+        return "generate"
+    if state.get("retries", 0) < 1:               
+        return "rewrite_question"
+    return "web_search"
 
 def web_search(state):
     """
@@ -292,6 +297,40 @@ def generate(state):
         'checks': checks,
     }
 
+def rewrite_question(state):
+    """
+    Rewrite the original question to something more clear.
+
+    Args:
+        state (dict): The current graph state
+    
+    Returns:
+        state (dict): Updates question key wth a re-phrased question
+    """
+    print("--- REWRITING QUESTION ---")
+    llm_rewriter = ChatOpenAI(model="gpt-5.4-mini")
+    question = state['question']
+
+    system = """YRewrite the question as a search query for passages in 17th to 19th\n
+    century philosophical texts. Use the vocabulary those authors used\n
+    (for example "state of nature", "the passions", "commonwealth",\n
+    "liberty", "sovereign") rather than modern phrasing. Keep the thinker\n
+    and the topic. Return only the query."""
+
+    re_write_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system),
+            (
+                'human',
+                "Here is the initial question: \n\n {question} \n Formulate an improved question."
+            )
+        ]
+    )
+    question_rewriter = re_write_prompt | llm_rewriter | StrOutputParser()
+
+    better_question = question_rewriter.invoke({'question':question})
+    return {'search_query':better_question, "retries": state.get("retries", 0) + 1}
+
 def modernize(state):
 
     system = """You will be given an answer about historical philosophical works. It
@@ -317,7 +356,7 @@ def modernize(state):
         ]
     )
 
-    llm = ChatOpenAI(model="gpt-5.4-mini")
+    llm = ChatOpenAI(model="gpt-6.2-sol")
     modernization_request = modernization_prompt | llm
     display_answer = modernization_request.invoke(
         {"responseAnswer": state['response'].Answer}
@@ -335,9 +374,10 @@ def deny(state):
 
 class AgentState(TypedDict):
     question: str
+    search_query: str
     is_philosophical: bool
-    web_search: bool
     reason: str
+    retries: int #number of times the question has been rewritten and asked
     messages: Annotated[list[AnyMessage], add_messages]  # appended to, never replaced
     documents: Annotated[list[Document], operator.add]   # generate copies these from the tool's result
     relevant_documents: list[Document]   # generate copies these from the tool's result
@@ -346,6 +386,7 @@ class AgentState(TypedDict):
     authors: list[Author]
     other_thinkers: list[str]
     display_answer: str   # modernize: for reading only, never graded
+    grades: list[dict]
 
 workflow = StateGraph(AgentState)
 workflow.add_node('classify', classify)
@@ -356,6 +397,7 @@ workflow.add_node('generate', generate)
 workflow.add_node('modernize', modernize)
 workflow.add_node('grade_documents', grade_documents)
 workflow.add_node('web_search',web_search)
+workflow.add_node('rewrite_question',rewrite_question)
 workflow.add_edge(START,'classify')
 workflow.add_conditional_edges(
     'classify',
@@ -374,7 +416,17 @@ workflow.add_conditional_edges(
     decide_to_generate,
     {
         'web_search': 'web_search',
+        'rewrite_question': 'rewrite_question',
         'generate': 'generate'
+    }
+)
+workflow.add_conditional_edges(
+    'rewrite_question',
+    answer_philosophy_question_or_dismiss,
+    {
+        'retrieve_author': 'retrieve_author',
+        'retrieve_node': 'retrieve_node',
+        'deny':'deny'
     }
 )
 workflow.add_edge('web_search','generate')
