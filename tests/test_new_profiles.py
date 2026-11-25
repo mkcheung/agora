@@ -9,7 +9,7 @@ from parsers import parse_epub
 
 
 @pytest.fixture(scope='module')
-def books():
+def books(require_epubs):
     return {w['profile']: parse_epub(ROOT / w['file'], w['profile']) for w in WORKS[7:]}
 
 

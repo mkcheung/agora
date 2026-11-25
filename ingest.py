@@ -16,7 +16,7 @@ from config import (
     EMBEDDING_MODEL,
     INDEX_NAME,
 )
-from embedding_input import embedding_text
+from embedding_input import embedding_hash, embedding_text
 from parsers import PARSER_VERSION, parse_epub
 
 ROOT = Path(__file__).resolve().parent
@@ -59,6 +59,8 @@ def validate_records(chunks, ids):
         for key in ("chapter", "section"):
             if key in meta and (isinstance(meta[key], bool) or not isinstance(meta[key], int)):
                 raise ValueError(f"{key} must be a whole number: {ident}")
+        if "embedded_text_sha256" in meta and meta["embedded_text_sha256"] != embedding_hash(chunk):
+            raise ValueError(f"Embedded text hash mismatch: {ident}")
 
 
 def prepare_records(sources=None):
@@ -88,6 +90,7 @@ def prepare_records(sources=None):
         pieces, piece_ids = chunk_paragraphs(paragraphs)
         for piece in pieces:
             piece.metadata["corpus_version"] = generation
+            piece.metadata["embedded_text_sha256"] = embedding_hash(piece)
         validate_records(pieces, piece_ids)
         details.update(chunks=len(pieces), content_types=dict(Counter(d.metadata["content_type"] for d in paragraphs)),
                        first={"metadata": pieces[0].metadata, "text": pieces[0].page_content[:180]},

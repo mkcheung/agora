@@ -2,11 +2,14 @@
 import json
 from pathlib import Path
 
+import pytest
+
 import ingest
 from parsers import parse_epub
 from scripts.corpus_snapshot import record_hashes
 
 ROOT = Path(__file__).resolve().parents[1]
+pytestmark = pytest.mark.usefixtures("require_epubs")
 
 
 def test_g2_preserves_every_new_book_record():

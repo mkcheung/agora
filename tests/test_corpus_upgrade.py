@@ -18,7 +18,7 @@ def record_hashes(chunks):
     } for d in chunks}
 
 
-def test_golden_corpus():
+def test_golden_corpus(require_epubs):
     expected = json.loads((Path(__file__).parent / 'golden/g2_hashes.json').read_text())
     chunks, _, _ = ingest.prepare_records()
     actual = record_hashes(chunks)
@@ -28,8 +28,10 @@ def test_golden_corpus():
 @pytest.mark.parametrize('field', ['chapter', 'section'])
 @pytest.mark.parametrize('value', [True, False, 1.0, 1.5, '1'])
 def test_numeric_labels_are_integers(field, value):
-    chunks, ids, _ = ingest.prepare_records(['pg11224-images-3.epub'])
-    d = chunks[0].model_copy(deep=True)
+    from langchain_core.documents import Document
+    d = Document(page_content='Original text.', metadata={key: key for key in ingest.REQUIRED_METADATA})
+    d.metadata['passage_id'] = 'test:c0'
+    ids = ['test:c0']
     d.metadata[field] = value
     with pytest.raises(ValueError, match='whole number'):
         ingest.validate_records([d], ids[:1])
@@ -55,7 +57,7 @@ def test_reports_are_write_once_and_partial_paths_differ(tmp_path):
     assert ingest.report_path(a) != ingest.report_path(b)
 
 
-def test_missing_question_fails_before_upload(monkeypatch):
+def test_missing_question_fails_before_upload(monkeypatch, require_epubs):
     monkeypatch.delitem(ingest.QUESTIONS, 'pg11224')
     with pytest.raises(ValueError, match='No verification question'):
         ingest.prepare_records(['pg11224-images-3.epub'])
