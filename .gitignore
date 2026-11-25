@@ -8,3 +8,5 @@ chroma_db/
 data/
 *.epub
 reports/
+backups/
+editions/drafts/

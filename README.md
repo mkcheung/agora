@@ -1,7 +1,7 @@
 # agora
 
-Ask questions about the downloaded philosophical works, or retrieve passages and
-translate them into contemporary English. EPUB parsing and upload are separate
+Ask questions about the downloaded philosophical works using original passages
+and checked citations. The query graph can modernize its answer. EPUB parsing and upload are separate
 from the query scripts.
 
 ## Setup and queries
@@ -23,14 +23,14 @@ that every answer claim follows from that quotation. The same model gets one
 correction attempt when checks fail. Remaining failures stay visible in the CLI
 output; quotations are never silently repaired.
 
-`philosophy_query.py` retains batched translation and prints the stored source
-locations, including passages without chapters or sections.
+`philosophy_query.py` classifies questions, retrieves and grades passages, and
+generates answers with citations before modernizing the answer.
 
 ## Prepare EPUBs offline
 
 ```sh
 .venv/bin/python ingest.py
-.venv/bin/python ingest.py --report reports/epub-preparation.json
+.venv/bin/python ingest.py --report /tmp/agora-preparation-review.json
 .venv/bin/python ingest.py --source pg11224-images-3.epub
 ```
 
@@ -61,12 +61,13 @@ Use the namespace printed by preparation in place of `PRINTED_NAMESPACE` below:
 Upload checks the existing index dimension before embedding and sends bounded
 batches. Its progress report records acknowledged IDs; repeating the same upload
 skips acknowledged records. A retry after an unacknowledged request can still
-repeat embedding charges. Changed input files or extraction code produce a new
-namespace, keeping corpus generations separate.
+repeat embedding charges. Changed source files, parser, chunker, embedding inputs or embedding settings
+produce a new namespace. Uploads refuse the default and active namespaces.
+Reports accept identical reruns and refuse different content at the same path.
 
 Verification compares every prepared record's ID, text, and metadata with
 Pinecone, then retrieves passages from each logical work. Run question/answer and
-translation checks against staging before changing the active destination:
+answer-modernization checks against staging before changing the active destination:
 
 ```sh
 AGORA_NAMESPACE=PRINTED_NAMESPACE .venv/bin/python ask.py --question "What is the greatest happiness principle?"
@@ -92,3 +93,10 @@ Real-book integration checks are skipped if the ignored EPUB inputs are absent.
 Generated reports and a snapshot of the previous query/extraction code are in
 the ignored `reports/` directory. See the implementation record in the plan for
 the active namespace and live validation results.
+
+New-book paragraph counters restart at each printed label path; the original
+profiles count across section changes within a chapter. All paragraph numbers
+are edition-specific. The twelve Gutenberg sources contain fourteen works by
+eight authors. Sam Harris remains deferred. See CORPUS_UPGRADE_PLAN.md for the
+generation and review sequence. Tables are preserved as tables and translator
+material is excluded from author-attributed passages.

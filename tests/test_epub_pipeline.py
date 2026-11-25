@@ -176,7 +176,7 @@ def test_chunk_identity_metadata_and_repeatability():
 
 def test_full_corpus_coverage_and_clean_metadata(corpus):
     chunks, ids, report = corpus
-    assert len(report['sources']) == 7 and report['logical_works'] == 9
+    assert len(report['sources']) == 12 and report['logical_works'] == 14
     ingest.validate_records(chunks, ids)
     assert all('PROJECT GUTENBERG' not in d.page_content.upper() for d in chunks)
     assert all('THE END.' != d.page_content for d in chunks)
@@ -238,6 +238,8 @@ def test_invalid_metadata_fails(corpus):
 def test_upload_failure_and_resume_without_duplicate_embedding(monkeypatch, tmp_path, corpus):
     chunks, ids, report = corpus
     chunks, ids = chunks[:3], ids[:3]
+    monkeypatch.setattr(ingest, 'DEFAULT_NAMESPACE', 'protected-default')
+    monkeypatch.setattr(ingest, 'ACTIVE_NAMESPACE', 'protected-active')
     calls = []
     class Embeddings:
         def __init__(self, **kwargs):
@@ -356,24 +358,3 @@ def test_one_correction_attempt_keeps_strict_quote_checks():
     _, checks = invoke_with_verification(chain, 'Question?', assemble_context([doc]), build_verification_index([doc]))
     assert len(chain.requests) == 2 and checks[0]['status'] == 'quote not found'
 
-
-def test_translation_cli_displays_unchaptered_sources(monkeypatch, capsys):
-    import runpy
-
-    import langchain.chat_models
-    from langchain_core.runnables import RunnableLambda
-
-    import retrieval
-    from philosophy_query import ModernizedWork
-
-    class Model:
-        def with_structured_output(self, schema):
-            assert schema.__name__ == 'ModernizedWork'
-            return RunnableLambda(lambda _: ModernizedWork(TranslatedPassage='A clear translation.'))
-    monkeypatch.setattr(langchain.chat_models, 'init_chat_model', lambda *a, **kw: Model())
-    monkeypatch.setattr(retrieval, 'retrieve', lambda question: [example()])
-    monkeypatch.setattr(sys, 'argv', ['philosophy_query.py', '--question', 'A question'])
-    runpy.run_path(str(ROOT / 'philosophy_query.py'), run_name='__main__')
-    output = capsys.readouterr().out
-    assert 'Native heading, paragraph 1' in output
-    assert 'A clear translation.' in output

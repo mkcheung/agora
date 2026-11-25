@@ -30,19 +30,19 @@ def test_rebuild_equals_parser_block_text_for_every_paragraph(real):
     parsed = {}
     for w in ingest.WORKS:
         for d in parse_epub(ROOT / w["file"], w["profile"], {"file": w["file"]}):
-            parsed[d.metadata["block_id"]] = d.page_content
+            parsed[d.metadata["block_id"]] = (d.page_content, d.metadata["content_type"])
     assert len(parsed) == len(corpus.paragraphs)
     multi = [p for p in corpus.paragraphs if len(p.chunks) > 1]
     assert len(multi) > 300
-    bad = [p.block_id for p in corpus.paragraphs if p.text != parsed[p.block_id]]
-    assert bad == [] and not [p for p in corpus.paragraphs if p.rebuild_uncertain]
+    bad = [p.block_id for p in corpus.paragraphs if parsed[p.block_id][1] != "table" and p.text != parsed[p.block_id][0]]
+    assert bad == [] and not [p for p in corpus.paragraphs if p.content_type != "table" and p.rebuild_uncertain]
 
 
 def test_counts_and_every_stratum_matches_something_real(real, capsys):
     from integrity.builder import strata as ST
 
     s, corpus, verdicts = real
-    assert len(corpus.paragraphs) == 3401
+    assert len(corpus.paragraphs) == 7900
     rules = ST.author_strata(s, corpus.paragraphs)
     el = Counter()
     for v in verdicts:

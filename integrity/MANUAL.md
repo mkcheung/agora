@@ -348,7 +348,7 @@ Before blaming Agora, check whether the card itself is at fault, for example a v
 ```sh
 .venv/bin/python -m integrity quiz --limit 3          # 1. quick crash test
 .venv/bin/python -m integrity quiz                    # 2. full run
-.venv/bin/python -m integrity compare latest r-20261121-070826   # 3. compare with your baseline run
+.venv/bin/python -m integrity compare r-20261121-070826 latest   # 3. compare with your baseline run
 ```
 
 Then:

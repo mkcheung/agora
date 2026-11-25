@@ -9,7 +9,14 @@ from collections import Counter
 from pathlib import Path
 
 from chunking import CHUNK_OVERLAP, CHUNK_SIZE, chunk_paragraphs
-from config import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, INDEX_NAME
+from config import (
+    ACTIVE_NAMESPACE,
+    DEFAULT_NAMESPACE,
+    EMBEDDING_DIMENSIONS,
+    EMBEDDING_MODEL,
+    INDEX_NAME,
+)
+from embedding_input import embedding_text
 from parsers import PARSER_VERSION, parse_epub
 
 ROOT = Path(__file__).resolve().parent
@@ -21,6 +28,9 @@ WORKS = [
     {"file": "pg27083-images-3.epub", "profile": "mill", "works": 1},
     {"file": "pg34901-images-3.epub", "profile": "mill", "works": 1},
     {"file": "pg15679-images-3.epub", "profile": "burke", "works": 3},
+    *[{"file": f"pg{n}-images-3.epub", "profile": profile, "works": 1}
+      for n, profile in [(3300, "smith"), (3420, "wollstonecraft"), (4280, "critique"),
+                         (5682, "groundwork"), (9662, "hume")]],
 ]
 REQUIRED_METADATA = ("author", "work", "source_id", "work_id", "block_id",
                      "passage_id", "locator", "source_href", "source_block", "corpus_version")
@@ -46,6 +56,9 @@ def validate_records(chunks, ids):
                 raise ValueError(f"Invalid metadata value in {ident}")
         if meta["passage_id"] != ident:
             raise ValueError(f"Passage/vector identity mismatch: {ident}")
+        for key in ("chapter", "section"):
+            if key in meta and (isinstance(meta[key], bool) or not isinstance(meta[key], int)):
+                raise ValueError(f"{key} must be a whole number: {ident}")
 
 
 def prepare_records(sources=None):
@@ -56,6 +69,7 @@ def prepare_records(sources=None):
     manifest = {
         "parser_version": PARSER_VERSION, "parser_sha256": fingerprint(ROOT / "parsers.py"),
         "chunker_sha256": fingerprint(ROOT / "chunking.py"),
+        "embedding_input_sha256": fingerprint(ROOT / "embedding_input.py"),
         "chunk_size": CHUNK_SIZE, "chunk_overlap": CHUNK_OVERLAP,
         "embedding_model": EMBEDDING_MODEL, "embedding_dimensions": EMBEDDING_DIMENSIONS,
         "sources": [dict(w, sha256=fingerprint(ROOT / w["file"])) for w in WORKS],
@@ -82,6 +96,9 @@ def prepare_records(sources=None):
         chunks.extend(pieces)
         ids.extend(piece_ids)
     validate_records(chunks, ids)
+    for doc in chunks:
+        if not QUESTIONS.get(doc.metadata["work_id"], QUESTIONS.get(doc.metadata["source_id"])):
+            raise ValueError(f"No verification question for {doc.metadata['work_id']}")
     report.update(chunks=len(chunks), logical_works=len({d.metadata["work_id"] for d in chunks}),
                   longest_chunk=max(len(d.page_content) for d in chunks),
                   mean_chunk_length=round(sum(len(d.page_content) for d in chunks) / len(chunks)),
@@ -102,6 +119,26 @@ def save_json(path, data):
     temp.replace(path)
 
 
+def save_report(path, data):
+    """Write once, accepting identical reruns without replacing evidence."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    content = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+    try:
+        with path.open("x") as stream:
+            stream.write(content)
+    except FileExistsError:
+        if path.read_text() != content:
+            raise ValueError(f"Refusing to overwrite different report: {path}")
+
+
+def report_path(report, kind="preparation"):
+    suffix = ""
+    if len(report["selected_sources"]) != len(WORKS):
+        suffix = "-partial-" + hashlib.sha256(json.dumps(report["selected_sources"]).encode()).hexdigest()[:12]
+    return ROOT / "reports" / f"{report['corpus_version']}{suffix}-{kind}.json"
+
+
 def remote_index():
     # API imports and clients are deliberately outside the offline preparation path.
     from pinecone import Pinecone
@@ -115,6 +152,8 @@ def remote_index():
 def upload_records(chunks, ids, report, namespace, batch_size=50, progress_path=None):
     if namespace != report["corpus_version"]:
         raise ValueError("Upload target must equal the prepared corpus's staging namespace")
+    if namespace in {DEFAULT_NAMESPACE, ACTIVE_NAMESPACE}:
+        raise ValueError("Refusing upload to the default or active namespace")
     if not 1 <= batch_size <= 100:
         raise ValueError("Batch size must be between 1 and 100")
     validate_records(chunks, ids)
@@ -137,7 +176,7 @@ def upload_records(chunks, ids, report, namespace, batch_size=50, progress_path=
     for start in range(0, len(pending), batch_size):
         batch = pending[start:start + batch_size]
         try:
-            values = embeddings.embed_documents([doc.page_content for doc, _ in batch])
+            values = embeddings.embed_documents([embedding_text(doc) for doc, _ in batch])
             if len(values) != len(batch) or any(len(v) != EMBEDDING_DIMENSIONS for v in values):
                 raise ValueError("Embedding response does not match the prepared records")
             response = index.upsert(vectors=[{"id": ident, "values": value,
@@ -158,6 +197,11 @@ def upload_records(chunks, ids, report, namespace, batch_size=50, progress_path=
 
 
 QUESTIONS = {
+    "pg3300": "How does the division of labour increase the productive powers of labour?",
+    "pg3420": "Why does Wollstonecraft argue that women should be educated as rational beings rather than to please men?",
+    "pg4280": "How are synthetical judgements a priori possible?",
+    "pg5682": "What is the categorical imperative?",
+    "pg9662": "Is our belief in cause and effect founded on reasoning or on custom?",
     "pg7370": "How is political power different from paternal power?",
     "pg10615": "Does Locke believe that people have innate principles?",
     "pg11224": "What is the greatest happiness principle?",
@@ -234,12 +278,14 @@ def main():
         print(f"  {source['file']}: {source['blocks']} blocks -> {source['chunks']} chunks; {source['content_types']}")
     print(f"Staging namespace: {report['corpus_version']}", flush=True)
     if args.report:
-        save_json(args.report, report)
+        save_report(args.report, report)
+    elif args.upload:
+        save_report(report_path(report), report)
     if args.upload:
         upload_records(chunks, ids, report, args.namespace, args.batch_size)
     if args.verify:
         verification = verify_namespace(chunks, ids, report, args.namespace)
-        save_json(ROOT / "reports" / f"{args.namespace}-verification.json", verification)
+        save_report(report_path(report, "verification"), verification)
         print(f"Verified {verification['verified_records']} records and {len(verification['retrieval'])} works")
     if not (args.upload or args.verify):
         print("Offline preparation only: no API clients, embeddings, or uploads.")

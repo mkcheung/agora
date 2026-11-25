@@ -172,3 +172,29 @@ consistency_sample = 0.2
 controls_per_run = 4
 max_retries = 2
 prompts = { coverage = "judge_coverage_v1", claims = "judge_claims_v1", support = "judge_support_v1", refusal = "judge_refusal_v1", premise = "judge_premise_v1" }
+
+# G1 survey: quoted positions and staged arguments cannot be cards for the author's views.
+[[eligibility.denylist]]
+work_id = "pg9662:main"
+locator_regex = "^Section XI,"
+reason = "Epicurus speech and dialogue about providence; conservatively exclude the whole staged discussion"
+
+[[eligibility.denylist]]
+work_id = "pg4280:main"
+locator_regex = "^Transcendental Dialectic, Book II, Chapter (1|2),"
+reason = "Paralogisms and Antinomy: staged arguments, theses and antitheses"
+
+[[eligibility.denylist]]
+work_id = "pg3420:main"
+locator_regex = "^Chapter 5, §1, paragraph (2|3|5|6|7|8|9|15|17|19|21|24|28|29|30|33|34|35|36|37|38|40|41|42|43|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60) \\("
+reason = "Rousseau quotations and mixed quotation/commentary; exclude conservatively"
+
+[[eligibility.denylist]]
+work_id = "pg3420:main"
+locator_regex = "^Chapter 5, §2, paragraph (5|9|13|14) \\("
+reason = "Fordyce quoted directly"
+
+[[eligibility.denylist]]
+work_id = "pg3420:main"
+locator_regex = "^Chapter 5, §3, paragraph (4|7|8|9|14|16|19|20) \\("
+reason = "Gregory quotation or mixed quotation/commentary"
