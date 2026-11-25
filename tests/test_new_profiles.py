@@ -78,7 +78,7 @@ def test_critique_structure(books):
     assert find(ds, 'FIRST CONFLICT').page_content.startswith('FIRST CONFLICT OF THE TRANSCENDENTAL IDEAS. THESIS.')
     assert not any(d.page_content in {'PROOF.', 'ANTITHESIS.'} for d in ds)
     assert sum(d.metadata['content_type'] == 'table' for d in ds) == 7
-    assert sum(d.metadata['content_type'] == 'note' for d in ds) == 76  # five translator glosses excluded
+    assert sum(d.metadata['content_type'] == 'note' for d in ds) == 75  # six translator glosses excluded after explorer review
 
 
 def test_groundwork_structure(books):
@@ -113,3 +113,17 @@ def test_new_profiles_reject_unknown_selected_headings(tmp_path):
     path = make_epub(tmp_path, ['<h2>INTRODUCTION AND PLAN OF THE WORK.</h2><p>Body.</p><h3>Unrecognised appendix</h3>'], source='3300')
     with pytest.raises(ValueError, match='Unrecognised Smith heading'):
         parse_epub(path)
+
+
+def test_explorer_corrections_keep_poetry_and_exclude_translator(books):
+    ds=books['wollstonecraft']
+    verse=[d for d in ds if d.metadata['content_type']=='verse']
+    assert len(verse)==9 and all('\n' in d.page_content for d in verse)
+    note=next(d for d in ds if d.metadata.get('source_anchor')=='id00531')
+    assert note.metadata['content_type']=='note' and note.metadata['literary_form']=='verse'
+    assert len(note.page_content.splitlines())==10
+    ordinary=next(d for d in ds if d.metadata.get('source_anchor')=='id00079')
+    assert ordinary.metadata['content_type']=='prose'
+    kant=books['critique']
+    assert not any(d.metadata['block_id']=='pg4280:main:b36813be45ba7c6e9ab2' for d in kant)
+    assert not any(re.search(r'[.—]\s*Tr\.?\s*$',d.page_content) for d in kant if d.metadata['content_type']=='note')

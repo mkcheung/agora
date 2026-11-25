@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 from ebooklib import epub
 from langchain_core.documents import Document
 
-PARSER_VERSION = "3"
+PARSER_VERSION = "4"
 ROMAN = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
 CHAPTER_RE = re.compile(r"^CHAPTER\.?\s+([IVXLCDM]+|\d+)\b\.?\s*(.*)$", re.IGNORECASE)
 DIVISION_RE = re.compile(r"^(BOOK|PART)\s+([IVXLCDM]+|\d+)\b\.?\s*(.*)$", re.IGNORECASE)
@@ -130,10 +130,14 @@ def resolve_href(href: str, target: str) -> str | None:
 NEW_PROFILES = {'smith', 'wollstonecraft', 'critique', 'groundwork', 'hume'}
 TITLE_OVERRIDES = {'pg3420': 'A Vindication of the Rights of Woman'}
 # Explicitly translator glosses / bibliographic identifications, not Kant's prose.
-CRITIQUE_TRANSLATOR_NOTES = {'linknote-29', 'linknote-30', 'linknote-31', 'linknote-33', 'linknote-70'}
+CRITIQUE_TRANSLATOR_NOTES = {'linknote-28', 'linknote-29', 'linknote-30', 'linknote-31', 'linknote-33', 'linknote-70'}
 
 
-def inline_text(element):
+WOLLSTONECRAFT_VERSE = {'id00116', 'id00119', 'id00142', 'id00177', 'id00255',
+                        'id00267', 'id00391', 'id00519', 'id00814', 'id00531'}
+
+
+def inline_text(element, preserve_lines=False):
     """Keep inline words intact; separate only actual line/block boundaries."""
     node = copy(element)
     for noise in node.select('.x-ebookmaker-pageno, .pagenum, .fnanchor, .fnref, .label, .mnumtag'):
@@ -146,6 +150,8 @@ def inline_text(element):
     for tag in node.find_all(['p', 'div', 'li']):
         tag.insert_before('\n')
         tag.insert_after('\n')
+    if preserve_lines:
+        return '\n'.join(clean(line) for line in node.get_text().splitlines() if clean(line))
     return clean(node.get_text())
 
 
@@ -167,7 +173,7 @@ def new_text(element, profile):
         return preserved_lines(element)
     if 'poem' in element.get('class', []) or element.select_one('.poem'):
         return block_text(element)
-    text = inline_text(element)
+    text = inline_text(element, preserve_lines=profile == 'wollstonecraft' and element.get('id') in WOLLSTONECRAFT_VERSE)
     if profile == 'wollstonecraft':
         text = re.sub(r'^\(\*?Footnote\.\s*', '', text).rstrip(')') if re.match(r'^\(\*?Footnote\.', text) else text
         text = text.replace('*', '').replace('>From', 'From')
@@ -570,7 +576,7 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
             labels.append(f"paragraph {paragraph} (edition-specific)")
             meta["locator"] = ", ".join(labels)
             doc = make_doc(element, text, href, position, meta,
-                           "verse" if "poem" in element.get("class", []) else
+                           "verse" if "poem" in element.get("class", []) or profile == "wollstonecraft" and element.get("id") in WOLLSTONECRAFT_VERSE else
                            "table" if element.name == "table" or "pre" in element.get("class", [])
                            or profile in {"critique", "hobbes"} and element.name == "pre" else "prose")
             documents.append(doc)
@@ -613,6 +619,8 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
                           if "footnote" in a["id"].lower()), f"block {position}")
             meta.update(locator=f"Note {label} to {owner.metadata['locator']}",
                         reference_block_id=owner.metadata["block_id"])
+            if profile == 'wollstonecraft' and element.get('id') in WOLLSTONECRAFT_VERSE:
+                meta['literary_form'] = 'verse'
             doc = make_doc(element, text, href, position, meta, "note")
             documents.append(doc)
             register(element, href, doc)

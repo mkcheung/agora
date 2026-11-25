@@ -42,7 +42,7 @@ def test_counts_and_every_stratum_matches_something_real(real, capsys):
     from integrity.builder import strata as ST
 
     s, corpus, verdicts = real
-    assert len(corpus.paragraphs) == 7913
+    assert len(corpus.paragraphs) == 7912
     rules = ST.author_strata(s, corpus.paragraphs)
     el = Counter()
     for v in verdicts:

@@ -16,14 +16,20 @@ def test_g2_preserves_every_new_book_record():
     chunks, _, _ = ingest.prepare_records()
     g1 = json.loads((ROOT / 'tests/golden/g1_hashes.json').read_text())
     current = record_hashes(chunks)
+    # G4 is an explicit additional repair after the frozen G2/G3 checkpoints.
+    for ident, value in json.loads((ROOT / 'tests/golden/g4_deltas.json').read_text()).items():
+        if value is None:
+            g1.pop(ident, None)
+        else:
+            g1[ident] = value
     new = ('pg3300:', 'pg3420:', 'pg4280:', 'pg5682:', 'pg9662:')
     assert {k:v for k,v in current.items() if k.startswith(new)} == {k:v for k,v in g1.items() if k.startswith(new)}
 
 
 def test_g2_intended_counts_and_dedications():
     chunks, _, report = ingest.prepare_records()
-    assert len(chunks) == 8937
-    assert sum(s['blocks'] for s in report['sources']) == 7913
+    assert len(chunks) == 8936
+    assert sum(s['blocks'] for s in report['sources']) == 7912
     for file, heading, count in [('pg10615-images-3.epub','THE EPISTLE DEDICATORY',3),
                                  ('pg3207-images-3.epub','THE EPISTLE DEDICATORY',5),
                                  ('pg34901-images-3.epub','DEDICATION',1)]:

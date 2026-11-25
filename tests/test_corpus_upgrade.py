@@ -19,7 +19,7 @@ def record_hashes(chunks):
 
 
 def test_golden_corpus(require_epubs):
-    expected = json.loads((Path(__file__).parent / 'golden/g2_hashes.json').read_text())
+    expected = json.loads((Path(__file__).parent / 'golden/g4_hashes.json').read_text())
     chunks, _, _ = ingest.prepare_records()
     actual = record_hashes(chunks)
     assert actual == expected
