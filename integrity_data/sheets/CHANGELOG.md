@@ -6,3 +6,11 @@ Added (32): c-00ea774417, c-0da216ba13, c-0f68ac47dd, c-43a6d2d9cb, c-45a72f1918
 Retired (0): -
 Re-anchored (0): -
 
+## v002 (2026-11-25T01:07:58Z)
+Parent: v001
+Note: add five books
+Cards: 62 (holdout 4)
+Added (30): c-06e9a02aa4, c-06f350e9ec, c-0981034e36, c-0a79311609, c-1ba46e38a1, c-23dd9ee6d1, c-382b36b13d, c-39c5f8215a, c-3c02c17e59, c-49ae19b2db, c-4e05198a2d, c-63a9fb824b, c-7abd7bbca6, c-7c30b85521, c-7f71d444ab, c-85d00b8ba0, c-860cd8eb7b, c-8cdd6bdd2d, c-91f76fd088, c-9a7c937c9d, c-ac2f0939b0, c-ad9e6f3feb, c-bcaf766882, c-bfc74fb3d1, c-d175c7589a, c-d5547be03d, c-da0f9239d2, c-e4197a8359, c-e5fe81f8a6, c-fe45761201
+Retired (0): -
+Re-anchored (0): -
+
