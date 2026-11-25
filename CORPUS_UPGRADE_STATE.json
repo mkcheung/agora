@@ -1,6 +1,6 @@
 {
-  "status": "G4_R1_one_Kant_application_smoke_passed_with_display_note",
-  "branch": "corpus-upgrade",
+  "status": "corpus_upload_activation_phase_complete",
+  "branch": "main",
   "starting_tag": "pre-corpus-upgrade",
   "active_namespace": "epub-v1-493ca312bc082c7e",
   "query_graph_modified": true,
@@ -111,10 +111,10 @@
     "latest_backup": "backups/edition-review-resume-20261125-111506"
   },
   "remaining": [
-    "G4 + R1 are applied locally on corpus-upgrade. Commit/merge and restart any already-running application process remain separate from the completed file edits.",
-    "The single authorized Kant application smoke test passed, with a cosmetic display wrapper-tag issue noted. Other authors/routes were not tested. Stop here; no further paid calls without new explicit authorization, and never repeat the four trusted v002 regrades.",
-    "R7 publication/v003 baseline is deferred; do not run further paid integrity grading without new explicit authorization.",
-    "Edition remains an unreleased partial draft with 48 review cases and a $10 cumulative edition cap; no edition work was performed in this activation.",
+    "Upload/app-switch phase is complete on main. Restart any already-running application process to load the new default; no service restart or remote push was performed.",
+    "Cosmetic display issue: modernization echoed <responseAnswer> wrapper tags in the Kant smoke. Recorded but not fixed; other author/routes were not live-tested.",
+    "R7 publication/v003 baseline is deferred. No further paid integrity grading without new explicit authorization; do not repeat the four trusted v002 regrades.",
+    "Separate modern-English edition remains partial and unreleased: 48 review cases, existing $10 cumulative edition cap.",
     "Retain old/superseded namespaces; exact deletion approval is still required."
   ],
   "recovery": "Original namespace unchanged. Branch/tag and backups preserve original EPUBs, reports and raw quiz files. No deletions.",
@@ -135,9 +135,9 @@
     "latest_checks": "All identified findings fixed and rechecked independently."
   },
   "validation": {
-    "full_suite": "637 passed in 60.86s, offline with AGORA_NAMESPACE set to final G4",
+    "full_suite": "637 passed in 60.77s, offline after G4 default namespace and R1 author activation",
     "ruff": "changed Python files passed",
-    "git_diff_check": "passed",
+    "git_diff_check": "passed before activation commit and merge",
     "portable_test_check": "missing-EPUB simulation passed; integration tests skipped",
     "sheet_check": "2026-11-24 resumed: v002 62/62 ok against G4",
     "latest_namespace": "epub-v1-493ca312bc082c7e",
@@ -429,13 +429,15 @@
     "target_namespace": "epub-v1-493ca312bc082c7e",
     "include_R1": true,
     "branch": "main",
-    "execution_note": "User explicitly authorized the two application edits. G4 default namespace and R1 author labels are now applied in the corpus-upgrade working tree; no commit, main merge, or service restart was performed. Paid integrity grading remains stopped.",
+    "execution_note": "Final G4 default namespace and R1 author labels were committed as 40a26d7 on corpus-upgrade, then fast-forward merged into main at user request. One Kant application smoke passed, and all 637 offline tests passed. No remote push or service restart was performed.",
     "prepared_patch": "reports/final-G4-R1-activation-20261125.patch",
     "candidate_graph_sha256": "d37b49e8814ab1d2c1583ec689d75247bb14f46bd2e06bda8c4f6d5953b2ee57",
     "before_config_sha256": "429b949c7ecb635560f0ae7f55c7318d35e21cc306539d75531fe99b56a6be1b",
     "before_graph_sha256": "fe05d80e846e78f018b7021295c67db9e92337247c6406789c22a5ec8964e8b6",
     "applied_branch": "corpus-upgrade",
-    "applied_locally": true
+    "applied_locally": true,
+    "merged_into_main": true,
+    "activation_commit": "40a26d7"
   },
   "paid_api_policy": {
     "integrity_grading": "Stopped at user request; no further paid integrity evaluations without new explicit authorization.",
@@ -454,5 +456,18 @@
     "sdk_and_app_same_project": true,
     "endpoint_host": "api.openai.com",
     "completed_smoke_cases": 0
+  },
+  "phase_completion": {
+    "scope": "Upload and activate the expanded original-text corpus with recognized-author routing.",
+    "completed_at": "2026-11-25T21:16:54.382822+00:00",
+    "branch": "main",
+    "activation_commit": "40a26d7",
+    "works": 14,
+    "verified_records": 8936,
+    "live_smoke": "One Kant question passed; other authors and routes were not exercised.",
+    "offline_suite": "637 passed",
+    "remote_push": false,
+    "service_restart": false,
+    "excluded": "Unreleased modern-English edition; deferred R7/v003 baseline; cosmetic display wrapper tags."
   }
 }
