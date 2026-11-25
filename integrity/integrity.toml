@@ -146,7 +146,7 @@ weight = 0.60
 [[strata]]
 name = "burke-army-estimates"
 work_id = ["pg15679:substance_of_the_speech"]
-paragraph_in = ["3-37", 39, 41]
+paragraph_in = ["2-36", 37, 38]
 weight = 0.08
 [[strata]]
 name = "burke-nabob"

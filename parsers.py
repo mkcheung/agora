@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 from ebooklib import epub
 from langchain_core.documents import Document
 
-PARSER_VERSION = "2"
+PARSER_VERSION = "3"
 ROMAN = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
 CHAPTER_RE = re.compile(r"^CHAPTER\.?\s+([IVXLCDM]+|\d+)\b\.?\s*(.*)$", re.IGNORECASE)
 DIVISION_RE = re.compile(r"^(BOOK|PART)\s+([IVXLCDM]+|\d+)\b\.?\s*(.*)$", re.IGNORECASE)
@@ -28,6 +28,11 @@ BURKE_WORKS = {
 # These notes explicitly identify a transcriber or discuss Burke in the third
 # person ("Mr. Burke probably had in his mind..."); they are not his prose.
 BURKE_EDITORIAL_NOTES = {"Footnote_24_24", "Footnote_75_75"}
+BURKE_OTHER_SPEAKERS = (
+    "MR. BURKE'S SPEECH ON THE REPORT OF THE ARMY ESTIMATES",
+    "MR. FOX THEN ROSE", "MR. SHERIDAN THEN ROSE",
+    "N.B. AS TO THE PARTICULAR GENTLEMEN", "MR. PITT CONCLUDED THE DEBATE",
+)
 
 
 def clean(text: str) -> str:
@@ -70,6 +75,8 @@ def block_text(element: Tag) -> str:
             link.decompose()  # a note's backlink/number is navigation
     if element.name == "table":
         return table_text(element)
+    if element.name == "pre":
+        return preserved_lines(element)
     tables = list(element.find_all("table"))
     for table in tables:
         table.replace_with("\n" + table_text(table) + "\n")
@@ -79,7 +86,7 @@ def block_text(element: Tag) -> str:
             br.replace_with("\n")
     if verse or tables:
         return "\n".join(clean(line) for line in element.get_text().splitlines() if clean(line))
-    return clean(element.get_text(" "))
+    return inline_text(element)
 
 
 def blocks(node: Tag):
@@ -410,7 +417,17 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
         href = item.file_name
         soup = BeautifulSoup(item.get_content(), "html.parser")
         for position, (kind, element) in enumerate(blocks(soup.body or soup), 1):
-            raw = (inline_text(element) if new else clean(element.get_text(" "))) if isinstance(element, Tag) else clean(str(element))
+            raw = inline_text(element) if isinstance(element, Tag) else clean(str(element))
+            if kind == 'body' and profile == 'hobbes' and raw.upper().startswith('TO MY MOST HONOR’D FRIEND'):
+                reset('part', 'chapter', 'chapter_title', 'heading', 'section', 'section_title')
+                state['heading'] = 'THE EPISTLE DEDICATORY'
+                active = True
+                exclude('dedication address', href, position, raw)
+                continue
+            if kind == 'body' and profile == 'mill' and raw.upper().startswith('TO THE BELOVED AND DEPLORED MEMORY'):
+                reset('chapter', 'chapter_title', 'heading', 'section', 'section_title')
+                state['heading'] = 'DEDICATION'
+                active = True
             if kind == "excluded":
                 exclude("navigation/license/formatting", href, position, raw)
                 continue
@@ -431,6 +448,18 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
                 exclude("structural heading", href, position, raw)
                 continue
             if kind == "heading":
+                if profile == 'essay' and upper == 'MY LORD,' and state.get('heading') != 'THE EPISTLE DEDICATORY':
+                    reset('chapter', 'chapter_title', 'heading', 'section', 'section_title')
+                    state['heading'] = 'THE EPISTLE DEDICATORY'
+                    active = True
+                    exclude('dedication address', href, position, raw)
+                    continue
+                if profile == 'mill' and state.get('heading') == 'DEDICATION':
+                    state.pop('heading')
+                    active = False  # Courtney's introduction follows Mill's dedication.
+                if profile in {'essay', 'hobbes'} and state.get('heading') == 'THE EPISTLE DEDICATORY' and upper == 'JOHN LOCKE':
+                    exclude('author signature', href, position, raw)
+                    continue
                 chapter, division = CHAPTER_RE.match(raw), DIVISION_RE.match(raw)
                 anchor = element.get("id")
                 if profile == "burke" and anchor in BURKE_WORKS:
@@ -478,7 +507,7 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
                 notes.append((element, href, position, note_owner or last_doc))
                 note_owner = None
                 continue
-            if upper in {"THE END.", "THE END", "FINIS.", "FOOTNOTES:", "FOOTNOTE:"}:
+            if upper in {"THE END.", "THE END", "FINIS.", "FINIS", "FOOTNOTES:", "FOOTNOTE:"}:
                 exclude("end marker", href, position, raw)
                 continue
             if profile == 'wollstonecraft':
@@ -502,12 +531,19 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
                     continue
             if profile == 'hume' and (number := element.select_one('.mnum')):
                 state['section'] = int(re.search(r'\d+', number.get_text())[0])
-            section = None if new else SECTION_RE.match(raw)
-            essay_section = re.match(r"^(\d+)\.\s+(.+)$", raw) if profile == "essay" else None
-            if essay_section:
-                state.update(section=int(essay_section.group(1)), section_title=essay_section.group(2))
-                exclude("section heading", href, position, raw)
+            if profile == 'burke' and state['work_id'] == 'pg15679:substance_of_the_speech' and upper.startswith(BURKE_OTHER_SPEAKERS):
+                exclude('editor/other speaker', href, position, raw)
                 continue
+            section = None if new else SECTION_RE.match(raw)
+            essay_section = re.match(r'^(\d+)\.(?:\s+(.*))?$', raw) if profile == 'essay' else None
+            if essay_section and int(essay_section[1]) > state.get('section', 0):
+                state['section'] = int(essay_section[1])
+                state.pop('section_title', None)
+                if len(raw) < 200:
+                    if essay_section[2]:
+                        state['section_title'] = essay_section[2]
+                    exclude('section heading', href, position, raw)
+                    continue
             if section:
                 state["section"] = int(section.group(1))
             text = new_text(element, profile) if new else block_text(element)
@@ -536,7 +572,7 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
             doc = make_doc(element, text, href, position, meta,
                            "verse" if "poem" in element.get("class", []) else
                            "table" if element.name == "table" or "pre" in element.get("class", [])
-                           or profile == "critique" and element.name == "pre" else "prose")
+                           or profile in {"critique", "hobbes"} and element.name == "pre" else "prose")
             documents.append(doc)
             last_doc = doc
             register(element, href, doc)
@@ -567,6 +603,8 @@ def parse_epub(path: str, profile: str | None = None, report: dict | None = None
                 pending.append((element, href, position, preceding))
                 continue
             text = new_text(element, profile) if new else block_text(element)
+            if profile == 'mill':
+                text = text.removeprefix(': ')
             if not text:
                 raise ValueError(f"Empty selected note: {href}:{position}")
             meta = {k: v for k, v in owner.metadata.items()

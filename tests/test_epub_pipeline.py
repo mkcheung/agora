@@ -198,7 +198,7 @@ def test_real_corpus_hierarchy_and_attribution(corpus):
     mill = [d for d in chunks if d.metadata['source_id'] == 'pg11224']
     assert next(d for d in mill if d.metadata['chapter'] == 1).metadata['chapter_title'] == 'GENERAL REMARKS.'
     liberty = [d for d in chunks if d.metadata['source_id'] == 'pg34901']
-    assert {d.metadata['chapter'] for d in liberty} == set(range(1, 6))
+    assert {d.metadata['chapter'] for d in liberty if 'chapter' in d.metadata} == set(range(1, 6))
     assert not any('W. L. COURTNEY' in d.page_content.upper() for d in liberty)
     burke = [d for d in chunks if d.metadata['source_id'] == 'pg15679']
     assert len({d.metadata['work'] for d in burke}) == 3
