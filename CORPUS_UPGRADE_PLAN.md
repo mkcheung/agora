@@ -1,6 +1,8 @@
 # Corpus Upgrade Plan
 
-**Status (2026-11-24): plan only, revision 3.** Nothing here has been implemented, and `philosophy_query.py` has not been touched. §8 lists the one change it needs and the optional ones, each awaiting your authorization.
+**Execution status (2026-11-24): implementation and offline validation complete; live execution is blocked by exhausted OpenAI credits.** G1 was uploaded and verified, its v001 comparison completed, and v002 was published with 30 approved new cards. The v002 baseline was interrupted by `credit_balance_exhausted` and is not valid baseline evidence. G2 and G3 have separate reproducible commits; explorer review identified two source defects, corrected in an additional isolated G4 generation. The original active namespace and `philosophy_query.py` remain unchanged until the live measurement/activation gates pass. R1 is authorized by the execution request and reserved for that activation commit; optional O1–O7 remain deferred. See `CORPUS_UPGRADE_STATE.json` for exact checkpoints and remaining work.
+
+**Edition scope agreed during execution:** use the suggested models with a $10 cumulative cap and stop with a resumable partial edition. The 92-block pilot is saved and backed up; flagged renderings are drafts, not a released edition.
 
 **Goals**
 1. Let `philosophy_query.py` answer questions about each author's ideas from that author's own works: 12 Gutenberg books by 8 authors. Sam Harris is deferred.
@@ -543,38 +545,38 @@ None of these affects the quiz, which calls `ask.answer_question` and never the 
 
 ## 12. Acceptance checklist
 **Phase 0**
-- [ ] Backups made.
-- [ ] Golden file committed.
-- [ ] Stale test retired and `run_live_checks.py` fixed.
-- [ ] Guards and guard tests added.
-- [ ] README and MANUAL §6.1 fixed.
-- [ ] Suite green.
-- [ ] Offline preparation still prints the live namespace.
+- [x] Backups made.
+- [x] Golden file committed.
+- [x] Stale test retired and `run_live_checks.py` fixed.
+- [x] Guards and guard tests added.
+- [x] README and MANUAL §6.1 fixed.
+- [x] Suite green.
+- [x] Offline preparation still prints the live namespace.
 
 **G1 offline**
-- [ ] Each new book reviewed by hand.
-- [ ] Preparation gives 12 sources / 14 works.
-- [ ] Golden test green.
-- [ ] Integer, unique-locator, note and size checks pass.
-- [ ] `sheet check` reports 32 ok.
-- [ ] Rebuild test passes, with tables exempt.
-- [ ] Suite green.
-- [ ] Golden file regenerated.
+- [x] Each new book reviewed by hand.
+- [x] Preparation gives 12 sources / 14 works.
+- [x] Golden test green.
+- [x] Integer, unique-locator, note and size checks pass.
+- [x] `sheet check` reports 32 ok.
+- [x] Rebuild test passes, with tables exempt.
+- [x] Suite green.
+- [x] Golden file regenerated.
 
 **G1 cards**
-- [ ] Parser frozen.
-- [ ] Survey done; exclusions added.
-- [ ] Cards built per book: 6 each, except the Groundwork at 2, all with `--false-premise 1`.
-- [ ] Every batch reviewed.
-- [ ] Suite re-run.
+- [x] Parser frozen.
+- [x] Survey done; exclusions added.
+- [x] Cards built per book: 6 each, except the Groundwork at 2, all with `--false-premise 1`.
+- [x] Every batch reviewed.
+- [x] Suite re-run.
 
 **G1 online**
-- [ ] Upload done.
-- [ ] Verify passes.
-- [ ] Filtered probes unchanged.
-- [ ] v001 crowding compared against `r-20261121-172125`.
-- [ ] v002 published once, with "added" equal to the number of approved cards.
-- [ ] `sheet check` after publishing: every card ok.
+- [x] Upload done.
+- [x] Verify passes.
+- [x] Filtered probes unchanged.
+- [x] v001 crowding compared against `r-20261121-172125`.
+- [x] v002 published once, with "added" equal to the number of approved cards.
+- [x] `sheet check` after publishing: every card ok.
 - [ ] v002 baseline recorded.
 - [ ] Merged to `main`.
 - [ ] Activation check run.
@@ -582,10 +584,10 @@ None of these affects the quiz, which calls `ask.answer_question` and never the 
 - [ ] Smoke tests pass.
 
 **G2**
-- [ ] Only the intended differences appear.
-- [ ] B2's stratum change is in the same commit.
+- [x] Only the intended differences appear.
+- [x] B2's stratum change is in the same commit.
 - [ ] Compared on v002.
-- [ ] Golden file regenerated.
+- [x] Golden file regenerated.
 - [ ] Activated.
 
 **G3**
@@ -601,7 +603,7 @@ None of these affects the quiz, which calls `ask.answer_question` and never the 
 - [ ] Every flag resolved.
 - [ ] Judge sample shows no negation flips.
 - [ ] Released edition committed.
-- [ ] CLI reader works.
+- [x] CLI reader works.
 
 **Cleanup**
 - [ ] Old namespaces deleted with the guarded command, only after soak.
@@ -979,3 +981,15 @@ All files are under `/private/tmp/claude-501/-Users-marscheung-SideProjects-agor
 | `adversary/` | `rebuild_new.py`, `ws_check.py`, `diff189.py`, `card_impact.py`, `deny_strata.py` |
 
 The prototypes are evidence, not code to copy. They were built separately and are not merged.
+
+
+## 14. Execution review amendments (2026-11-24)
+
+- Three independent explorer agents reviewed corpus extraction, integrity and the edition. Their findings were fixed and rechecked offline.
+- G4 is an additional isolated source repair after the frozen G1/G2/G3 checkpoints. It excludes Kant translator note `linknote-28` and preserves nine Wollstonecraft verse paragraphs plus one verse note. Exactly 11 passage records differ from G2/G3; `tests/golden/g4_deltas.json` declares them. Measure G4 on unchanged v002 after G3, then perform R7 once and baseline v003. This preserves the three original generation comparisons.
+- “Each new book reviewed by hand” above records Codex source/markup inspection, not an independent human endorsement. Quiz batches were likewise reviewed by Codex, with eight targeted wording edits and one rejected tentative Groundwork false-premise card. The approved count was 30.
+- The filtered probe exception was a swap at eighth place for one Mill question: top seven unchanged, with scores approximately 0.5400 versus 0.5396. This is the near-tie exception permitted in §5.8.
+- Edition review accepts exact source/render hashes only and cannot replace the required independent judge sample. `retranslate` and `rejudge` target explicit block IDs, clear obsolete decisions, append history and use the same spend ledger. Tables never go to either model. Paid mutations refuse released paths, including symlinked paths.
+- The partial edition remains unreleased because content flags and judge disagreements require resolution. The retained $10 cap also prevents treating a partial edition as a full-build acceptance.
+- Do not resume the interrupted v002 run as a clean baseline: it contains saved quota-error records that normal resume skips. Start a fresh explicit v002/G1 run once credits are restored, retaining the interrupted receipt.
+- No namespaces were deleted. The original live namespace is unchanged. Additional superseded G1 staging evidence is retained for audit; cleanup requires the exact-target safeguards and a later successful activation/baseline.

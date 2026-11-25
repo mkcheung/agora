@@ -10,3 +10,6 @@ INDEX_NAME = 'agora'
 LEGACY_ID_PREFIX = "pg7370-chunk-"  # IDs from the first, metadata-less upload
 DEFAULT_NAMESPACE = "epub-v1-04b8672ea20df6c7"
 ACTIVE_NAMESPACE = os.getenv("AGORA_NAMESPACE", DEFAULT_NAMESPACE)
+# Only released, reviewed editions should be made the default. Drafts use CLI selection.
+DEFAULT_EDITION = None
+ACTIVE_EDITION = os.getenv("AGORA_EDITION", DEFAULT_EDITION)

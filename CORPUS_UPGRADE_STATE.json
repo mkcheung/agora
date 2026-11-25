@@ -1,0 +1,110 @@
+{
+  "status": "offline_complete_live_blocked_by_credit_balance_exhausted",
+  "branch": "corpus-upgrade",
+  "starting_tag": "pre-corpus-upgrade",
+  "active_namespace": "epub-v1-04b8672ea20df6c7",
+  "query_graph_modified": false,
+  "generations": {
+    "G1": {
+      "commit": "5f568ea",
+      "namespace": "epub-v1-072397d01f31c73d",
+      "blocks": 7900,
+      "chunks": 8920,
+      "uploaded_verified": true,
+      "v001_run": "r-20261125-004053",
+      "v001_grader": "g-eaa3d7",
+      "v002_baseline": null
+    },
+    "G2": {
+      "commit": "011eab3",
+      "namespace": "epub-v1-ca56b9ef110f9669",
+      "blocks": 7913,
+      "chunks": 8937,
+      "uploaded_verified": false
+    },
+    "G3": {
+      "commit": "c962220",
+      "namespace": "epub-v1-6e66750471be0619",
+      "blocks": 7913,
+      "chunks": 8937,
+      "uploaded_verified": false
+    },
+    "G4_review_corrections": {
+      "namespace": "epub-v1-493ca312bc082c7e",
+      "blocks": 7912,
+      "chunks": 8936,
+      "uploaded_verified": false,
+      "declared_passage_deltas": 11,
+      "commit": "053467c"
+    }
+  },
+  "sheets": {
+    "latest": "v002",
+    "cards": 62,
+    "added": 30,
+    "rejected_new_cards": 1,
+    "reviewer": "Codex; no human review claimed"
+  },
+  "interrupted_run": {
+    "id": "r-20261125-010820",
+    "reason": "OpenAI credit_balance_exhausted",
+    "use_as_baseline": false,
+    "retry": "start fresh v002/G1 run; preserve errored receipt"
+  },
+  "edition": {
+    "id": "modern-625a33559a9807f4",
+    "cap_usd": 10,
+    "booked_usd": 0.8655219999999996,
+    "records": 92,
+    "released": false,
+    "scope": "resumable partial per user instruction",
+    "remaining": "resolve flags and judge disagreements; current checks require fresh bound judge receipts",
+    "current_check": {
+      "alignment": {
+        "valid": 92
+      },
+      "missing_judge": 69,
+      "release_ready": false,
+      "total": 7912,
+      "translated": 92,
+      "unresolved": 56
+    }
+  },
+  "remaining": [
+    "Restore OpenAI API credits; fresh integrity quiz --sheet v002 --namespace G1.",
+    "Merge corpus-upgrade to main before activation; advisory activation script; activate G1 and R1 Author literals together; smoke graph per new author and ask.",
+    "Use G2 checkpoint in an isolated worktree with exact backed-up EPUB files; prepare namespace equality, upload and verify; v002 quiz and compare G1 baseline -> G2; activate.",
+    "Use G3 checkpoint likewise; upload/verify; v002 quiz and compare G2 -> G3; activate.",
+    "Measure G4 review corrections on v002 and compare G3 -> G4; activate final corrected source corpus.",
+    "Apply R7 once after final generation; verify all refreshed fields; publish v003 and record a fresh v003 baseline.",
+    "Resume the authorized partial edition build/judging under the existing $10 cumulative ledger once credits return; never release unresolved or incomplete drafts.",
+    "Retain old/superseded namespaces until soak and successful baseline; exact deletion approval is still required."
+  ],
+  "recovery": "Original namespace unchanged. Branch/tag and backups preserve original EPUBs, reports and raw quiz files. No deletions.",
+  "r1_authorized": true,
+  "r1_names": [
+    "Immanuel Kant",
+    "David Hume",
+    "Mary Wollstonecraft"
+  ],
+  "explorer_review": {
+    "agents": [
+      "explore_corpus",
+      "explore_integrity",
+      "explore_edition"
+    ],
+    "all_identified_findings_resolved": true,
+    "source_delta_records": 11,
+    "latest_checks": "All identified findings fixed and rechecked independently."
+  },
+  "validation": {
+    "full_suite": "627 passed in 52.04s",
+    "ruff": "passed",
+    "git_diff_check": "passed",
+    "portable_test_check": "missing-EPUB simulation passed; integration tests skipped",
+    "sheet_check": "v002 62/62 ok",
+    "latest_namespace": "epub-v1-493ca312bc082c7e"
+  },
+  "latest_backup": "backups/corpus-upgrade-reviewed-20261124-172931",
+  "backup_verified_files": 67
+}

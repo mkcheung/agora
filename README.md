@@ -7,12 +7,13 @@ from the query scripts.
 ## Setup and queries
 
 Install the locked dependencies with `uv sync`. Put the relevant API keys in
-the ignored `.env` file: `OPENAI_API_KEY`, `PINECONE_API_KEY`, and `GROQ_API_KEY`.
+the ignored `.env` file: `OPENAI_API_KEY`, `PINECONE_API_KEY`, and `ANTHROPIC_API_KEY`. The query graph
+also needs `TAVILY_API_KEY` for web fallback.
 Local preparation and tests do not require those credentials.
 
 ```sh
 .venv/bin/python ask.py --question "How do Locke and Mill justify limits on political power?"
-.venv/bin/python philosophy_query.py --question "What is the greatest happiness principle?"
+.venv/bin/python philosophy_query.py
 ```
 
 `ask.py` retains its retrieve → context → structured answer → citation
@@ -130,3 +131,16 @@ edition. Back up the ignored `editions/drafts/` directory after paid work.
 The frozen translation prompt and separately hashed rules live in
 `edition_prompts/`. Prompt drift is checked with AST without importing the query
 graph. Streamlit and searching modern text remain later work in the plan.
+
+Smoke evidence always names its destination explicitly:
+
+```sh
+.venv/bin/python scripts/run_live_checks.py --namespace PRINTED_NAMESPACE
+```
+
+Edition corrections are append-only and keep the same spend ledger:
+`retranslate --block BLOCK_ID --max-usd 8` regenerates just selected blocks;
+`rejudge --block BLOCK_ID --max-usd 10` explicitly retries their judge.
+`review --block BLOCK_ID --reason "..." --reviewer "..."` accepts the exact
+source and modern text after review. Acceptance becomes invalid if either
+changes. Paid commands refuse released edition folders.
