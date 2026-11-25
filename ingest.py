@@ -251,6 +251,12 @@ def verify_namespace(chunks, ids, report, namespace, attempts=12, interval=5):
         if not docs or any(d.metadata.get("work_id") != work_id for d in docs):
             raise ValueError(f"No correctly attributed retrieval for {work_id}")
         for doc in docs:
+            # Pinecone serializes numeric metadata as floats. Normalize whole
+            # values at this transport boundary; fractional values still fail.
+            for key in ("chapter", "section"):
+                value = doc.metadata.get(key)
+                if isinstance(value, float) and value.is_integer():
+                    doc.metadata[key] = int(value)
             validate_records([doc], [doc.metadata["passage_id"]])
         results.append({"work_id": work_id, "question": question,
                         "passages": [{"id": d.metadata["passage_id"], "locator": d.metadata["locator"],

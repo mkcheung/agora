@@ -1,0 +1,468 @@
+{
+  "batch_id": "b-20261125-003808-s25",
+  "seed": 25,
+  "created_at": "2026-11-25T00:38:43Z",
+  "options": {
+    "count": 6,
+    "false_premise": 1,
+    "sources": [
+      "pg3420-images-3.epub"
+    ],
+    "authors": null,
+    "dry_run": false
+  },
+  "config": {
+    "paths": {
+      "data_dir": "integrity_data"
+    },
+    "seams": {
+      "project_root": "/Users/marscheung/SideProjects/agora",
+      "corpus_provider": "ingest:prepare_records",
+      "agora_entrypoint": "ask:answer_question"
+    },
+    "models": {
+      "drafter": "openai:gpt-4.1",
+      "attribution": "anthropic:claude-opus-5-5",
+      "judge": "openai:gpt-4.1",
+      "temperature": 0.0,
+      "agora_model_hint": "anthropic:claude-sonnet-5-5",
+      "tracing": "inherit"
+    },
+    "build": {
+      "default_count": 24,
+      "default_false_premise": 6,
+      "max_attempts_per_slot": 3,
+      "neighbor_exclusion": 1,
+      "context_chars": 300,
+      "attribution_advisory": true
+    },
+    "checks": {
+      "quote_min_words": 6,
+      "quote_max_words": 40,
+      "leakage_ngram": 5,
+      "three_points_min_chars": 800,
+      "require_author_in_question": true,
+      "max_question_chars": 300
+    },
+    "eligibility": {
+      "content_types": [
+        "prose"
+      ],
+      "min_chars": 600,
+      "max_chars": 4000,
+      "min_stopword_ratio": 0.2,
+      "max_latin_markers": 5,
+      "max_quoted_fraction": 0.3,
+      "max_question_fraction": 0.5,
+      "max_money_terms": 2,
+      "max_bible_refs": 2,
+      "denylist": [
+        {
+          "work_id": "pg7370:main",
+          "locator_regex": "^Book II, Chapter 19, §(233|237|238),",
+          "block_id": null,
+          "reason": "Barclay's words (English translation), not Locke's"
+        },
+        {
+          "work_id": "pg10615:main",
+          "locator_regex": "^Volume 1, THE EPISTLE TO THE READER, paragraph 24 \\(",
+          "block_id": null,
+          "reason": "editorial addition made after Locke's death (Sixth Edition note)"
+        },
+        {
+          "work_id": "pg7370:main",
+          "locator_regex": "^Book II, Chapter 15, §172, paragraph 5 \\(",
+          "block_id": null,
+          "reason": "editorial note ('Another copy corrected by Mr. Locke'); also caught by EL-quote-led and EL-len"
+        },
+        {
+          "work_id": "pg3207:main",
+          "locator_regex": "^Part III, Chapter 42, (Cardinal Bellarmines Books|The (First|Second|Third|Fourth) Book|Texts For The Infallibility)",
+          "block_id": null,
+          "reason": "Hobbes summarises Bellarmine's arguments (ch. 42); the sections where Hobbes replies at length stay eligible and are flagged by the Bellarmine name cue"
+        },
+        {
+          "work_id": "pg3207:main",
+          "locator_regex": "^Part II, Chapter 29, Private Judgement Of Good and Evill, paragraph 6 \\(",
+          "block_id": null,
+          "reason": "lists seditious doctrines that Hobbes quotes in order to reject them; other ch. 29 paragraphs rely on the 'seditious' cue (SF3)"
+        },
+        {
+          "work_id": "pg15679:reflections",
+          "locator_regex": "paragraph 136 \\(",
+          "block_id": null,
+          "reason": "irony ('a king is but a man, a queen is but a woman...'); the drafter cannot be trusted to label it"
+        },
+        {
+          "work_id": "pg9662:main",
+          "locator_regex": "^Section XI,",
+          "block_id": null,
+          "reason": "Epicurus speech and dialogue about providence; conservatively exclude the whole staged discussion"
+        },
+        {
+          "work_id": "pg4280:main",
+          "locator_regex": "^Transcendental Dialectic, Book II, Chapter (1|2),",
+          "block_id": null,
+          "reason": "Paralogisms and Antinomy: staged arguments, theses and antitheses"
+        },
+        {
+          "work_id": "pg3420:main",
+          "locator_regex": "^Chapter 5, §1, paragraph (2|3|5|6|7|8|9|15|17|19|21|24|28|29|30|33|34|35|36|37|38|40|41|42|43|45|46|47|48|49|50|51|52|53|54|55|56|57|58|59|60) \\(",
+          "block_id": null,
+          "reason": "Rousseau quotations and mixed quotation/commentary; exclude conservatively"
+        },
+        {
+          "work_id": "pg3420:main",
+          "locator_regex": "^Chapter 5, §2, paragraph (5|9|13|14) \\(",
+          "block_id": null,
+          "reason": "Fordyce quoted directly"
+        },
+        {
+          "work_id": "pg3420:main",
+          "locator_regex": "^Chapter 5, §3, paragraph (4|7|8|9|14|16|19|20) \\(",
+          "block_id": null,
+          "reason": "Gregory quotation or mixed quotation/commentary"
+        }
+      ]
+    },
+    "authors": {
+      "John Stuart Mill": {
+        "content_types": null,
+        "min_chars": 800,
+        "max_chars": null,
+        "min_stopword_ratio": null,
+        "max_latin_markers": null,
+        "max_quoted_fraction": null,
+        "max_question_fraction": null,
+        "max_money_terms": null,
+        "max_bible_refs": null,
+        "quote_min_words": null,
+        "quote_max_words": null,
+        "leakage_ngram": null,
+        "three_points_min_chars": null,
+        "require_author_in_question": null,
+        "max_question_chars": null,
+        "quoted_text_is_other_speaker": null
+      },
+      "Thomas Hobbes": {
+        "content_types": null,
+        "min_chars": null,
+        "max_chars": null,
+        "min_stopword_ratio": null,
+        "max_latin_markers": null,
+        "max_quoted_fraction": 0.5,
+        "max_question_fraction": null,
+        "max_money_terms": null,
+        "max_bible_refs": null,
+        "quote_min_words": null,
+        "quote_max_words": null,
+        "leakage_ngram": null,
+        "three_points_min_chars": null,
+        "require_author_in_question": null,
+        "max_question_chars": null,
+        "quoted_text_is_other_speaker": null
+      },
+      "Edmund Burke": {
+        "content_types": null,
+        "min_chars": null,
+        "max_chars": null,
+        "min_stopword_ratio": null,
+        "max_latin_markers": null,
+        "max_quoted_fraction": null,
+        "max_question_fraction": null,
+        "max_money_terms": null,
+        "max_bible_refs": null,
+        "quote_min_words": null,
+        "quote_max_words": null,
+        "leakage_ngram": null,
+        "three_points_min_chars": 900,
+        "require_author_in_question": null,
+        "max_question_chars": null,
+        "quoted_text_is_other_speaker": true
+      }
+    },
+    "sampling": {
+      "author_weights": {}
+    },
+    "strata": [
+      {
+        "name": "locke-front-matter",
+        "work_id": [
+          "pg7370:main",
+          "pg10615:main"
+        ],
+        "locator_regex": "^(PREFACE|Volume 1, THE EPISTLE TO THE READER)",
+        "paragraph_in": null,
+        "weight": 0.06
+      },
+      {
+        "name": "locke-treatise",
+        "work_id": [
+          "pg7370:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.47
+      },
+      {
+        "name": "locke-essay",
+        "work_id": [
+          "pg10615:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.47
+      },
+      {
+        "name": "hobbes-christian-commonwealth-and-darkness",
+        "work_id": [
+          "pg3207:main"
+        ],
+        "locator_regex": "^Part (III|IV),",
+        "paragraph_in": null,
+        "weight": 0.28
+      },
+      {
+        "name": "hobbes-man-and-commonwealth",
+        "work_id": [
+          "pg3207:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.72
+      },
+      {
+        "name": "mill-utilitarianism",
+        "work_id": [
+          "pg11224:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.3334
+      },
+      {
+        "name": "mill-liberty",
+        "work_id": [
+          "pg34901:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.3333
+      },
+      {
+        "name": "mill-subjection",
+        "work_id": [
+          "pg27083:main"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.3333
+      },
+      {
+        "name": "burke-reflections-constitution",
+        "work_id": [
+          "pg15679:reflections"
+        ],
+        "locator_regex": null,
+        "paragraph_in": [
+          "293-415"
+        ],
+        "weight": 0.25
+      },
+      {
+        "name": "burke-reflections-core",
+        "work_id": [
+          "pg15679:reflections"
+        ],
+        "locator_regex": null,
+        "paragraph_in": null,
+        "weight": 0.6
+      },
+      {
+        "name": "burke-army-estimates",
+        "work_id": [
+          "pg15679:substance_of_the_speech"
+        ],
+        "locator_regex": null,
+        "paragraph_in": [
+          "3-37",
+          39,
+          41
+        ],
+        "weight": 0.08
+      },
+      {
+        "name": "burke-nabob",
+        "work_id": [
+          "pg15679:nabob_of_arcots_private_debts"
+        ],
+        "locator_regex": null,
+        "paragraph_in": [
+          7,
+          18,
+          "76-79",
+          133,
+          139
+        ],
+        "weight": 0.07
+      }
+    ],
+    "publish": {
+      "holdout_percent": 15
+    },
+    "review": {
+      "sensitive_terms": []
+    },
+    "quiz": {
+      "min_cards": 10,
+      "timeout_s": 180,
+      "retries": 1,
+      "strict": false
+    },
+    "judge": {
+      "granularity": "per_item",
+      "consistency_sample": 0.2,
+      "controls_per_run": 4,
+      "max_retries": 2,
+      "prompts": {
+        "coverage": "judge_coverage_v1",
+        "claims": "judge_claims_v1",
+        "support": "judge_support_v1",
+        "refusal": "judge_refusal_v1",
+        "premise": "judge_premise_v1"
+      }
+    }
+  },
+  "corpus_version": "epub-v1-072397d01f31c73d",
+  "slots": [
+    {
+      "slot": "pg3420:main#1",
+      "stratum": "pg3420:main",
+      "bin": 0,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 1, paragraph 29 (edition-specific)",
+      "position": 64,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:75ed7d924264ef6ace01",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "pg3420:main#2",
+      "stratum": "pg3420:main",
+      "bin": 1,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 3, paragraph 10 (edition-specific)",
+      "position": 151,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:b05b26184c8214d2b820",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "pg3420:main#3",
+      "stratum": "pg3420:main",
+      "bin": 2,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 5, §3, paragraph 6 (edition-specific)",
+      "position": 362,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:929910c83aba105c03aa",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "pg3420:main#4",
+      "stratum": "pg3420:main",
+      "bin": 3,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 7, paragraph 2 (edition-specific)",
+      "position": 455,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:29f2e64dc3c8da9ab45a",
+          "result": "discarded",
+          "failed": [
+            "HC5"
+          ]
+        },
+        {
+          "block_id": "pg3420:main:8051e4885dd0703cc7ea",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "pg3420:main#5",
+      "stratum": "pg3420:main",
+      "bin": 4,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 11, paragraph 18 (edition-specific)",
+      "position": 581,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:b77c86640ef161ac0de7",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "pg3420:main#6",
+      "stratum": "pg3420:main",
+      "bin": 5,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 13, §2, paragraph 10 (edition-specific)",
+      "position": 699,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:6c3242819e9ee44495e8",
+          "result": "accepted"
+        }
+      ]
+    },
+    {
+      "slot": "pg3420:main#fp1",
+      "stratum": "pg3420:main",
+      "bin": 0,
+      "author": "Mary Wollstonecraft",
+      "work": "A Vindication of the Rights of Woman",
+      "locator": "Chapter 4, paragraph 61 (edition-specific)",
+      "position": 252,
+      "candidates_tried": [
+        {
+          "block_id": "pg3420:main:a425f60e1519189f8ad5",
+          "result": "accepted"
+        }
+      ]
+    }
+  ],
+  "drafter_model": "openai:gpt-4.1",
+  "attribution_model": "anthropic:claude-opus-5-5",
+  "prompt_hashes": {
+    "drafter_v1": "3cf98ed1bcdb081c6694ec6060463989c0db7a8ceb1c34861e2cf090e3a21efd",
+    "drafter_false_premise_v1": "cd37a10d9b63f957f0294936dff28aae3d3e2657038472180e78d0a7b3fea2fe",
+    "attribution_v1": "7c0c23fe1c304ec39cf99c63e511f8b74210253a9cca52848b94d71b280c7086"
+  },
+  "timings": {
+    "elapsed_s": 36.971
+  },
+  "discard_counts": {
+    "HC5": 1
+  },
+  "status": "complete",
+  "filled": 7,
+  "unfilled": [],
+  "warnings": []
+}

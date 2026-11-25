@@ -47,7 +47,7 @@ def check_card(card: Card, corpus: Corpus, by_block: dict[str, Paragraph] | None
     a = card.anchor
     p = by_block.get(a.block_id)
     if p is not None and skeleton_sha256(p.text) == a.skeleton_sha256:
-        return CardCheck(card.card_id, "ok")
+        return CardCheck(card.card_id, "ok", target=p)
     if p is not None and _has_all_quotes(card, p.text):
         return CardCheck(card.card_id, "text_changed", "paragraph text changed; quotes still present", target=p)
     found = [q for q in corpus.paragraphs if q.work_id == a.work_id and _has_all_quotes(card, q.text)]
@@ -143,18 +143,20 @@ class ApplyResult:
 def apply_reanchoring(
     settings: Settings, rep: CheckReport, validate_card: ValidateCard | None = None
 ) -> ApplyResult:
-    """Re-anchor text_changed and moved cards, run the hard checks on each, publish a new version."""
+    """Refresh changed anchors, including stale labels/version on otherwise unchanged text."""
     validate = validate_card or make_validator(settings)
     by_id = {c.card_id: c for c in rep.sheet.cards}
     replacements: list[Card] = []
     failed: list[tuple[str, str]] = []
     for r in rep.results:
-        if r.status not in ("text_changed", "moved") or r.target is None:
+        if r.status not in ("ok", "text_changed", "moved") or r.target is None:
             continue
         try:
             new = reanchor_card(by_id[r.card_id], r.target)
         except MaintainError as e:
             failed.append((r.card_id, str(e)))
+            continue
+        if new.model_dump() == by_id[r.card_id].model_dump():
             continue
         fails = validate(new)
         if fails:

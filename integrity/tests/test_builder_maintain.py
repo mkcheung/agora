@@ -121,8 +121,8 @@ def test_apply_reanchors_without_changing_wording(settings, published, monkeypat
     assert run(settings, monkeypatch, new_corpus(paras), apply=True) == 0
     assert "published v002" in capsys.readouterr().out
     v1, v2 = sheets.verify_sheet(settings.data_dir, "v001"), sheets.verify_sheet(settings.data_dir, "v002")
-    assert v2.note == "re-anchored 2 cards" and v2.parent == "v001"
-    assert sorted(v2.reanchored) == sorted([cards[1].card_id, cards[2].card_id])
+    assert v2.note == "re-anchored 3 cards" and v2.parent == "v001"
+    assert sorted(v2.reanchored) == sorted([cards[1].card_id, cards[2].card_id, cards[6].card_id])
     old = {c.card_id: c for c in v1.cards}
     new = {c.card_id: c for c in v2.cards}
     assert old.keys() == new.keys()
@@ -131,8 +131,8 @@ def test_apply_reanchors_without_changing_wording(settings, published, monkeypat
         assert [k.statement for k in c.key_points] == [k.statement for k in old[cid].key_points]
         assert [k.id for k in c.key_points] == [k.id for k in old[cid].key_points]
         assert c.holdout == old[cid].holdout
-    # untouched: ok, ambiguous, missing
-    for i in (0, 3, 5, 6):
+    # unchanged labels, ambiguous and missing stay untouched
+    for i in (0, 3, 5):
         assert new[cards[i].card_id] == old[cards[i].card_id]
     edited = new[cards[1].card_id]
     assert edited.anchor.text.endswith("An appended sentence.")
@@ -167,7 +167,7 @@ def test_apply_skips_cards_failing_hard_checks(settings, published, monkeypatch,
     cap = capsys.readouterr()
     assert "could not re-anchor" in cap.err and "boom" in cap.err
     v2 = sheets.load_sheet(settings.data_dir, "v002")
-    assert v2.reanchored == [cards[1].card_id]
+    assert sorted(v2.reanchored) == sorted([cards[1].card_id, cards[6].card_id])
 
 
 def test_no_sheet_exit_2(settings, monkeypatch, capsys):
@@ -249,3 +249,20 @@ def test_sheet_check_prints_attention_for_missing_and_ambiguous_but_exits_0(sett
     assert run(settings, monkeypatch, corpus_of(old_paras())) == 0  # nothing missing here (all 8 present)
     out = capsys.readouterr().out
     assert "ATTENTION" not in out and "ok" in out
+
+
+def test_ok_cards_refresh_labels_and_version_only_when_applied(settings, published, monkeypatch):
+    paras, cards = published
+    p = paras[0]
+    p.locator = 'Corrected printed locator'
+    p.corpus_version = 'new-generation'
+    rep = maintain.run_check(settings, corpus_of(paras))
+    assert all(r.status == 'ok' for r in rep.results)
+    result = maintain.apply_reanchoring(settings, rep)
+    assert result.version == 'v002' and result.reanchored == [cards[0].card_id]
+    refreshed = next(c for c in sheets.load_sheet(settings.data_dir,'v002').cards if c.card_id == cards[0].card_id)
+    assert refreshed.anchor.locator == p.locator
+    assert refreshed.anchor.corpus_version == 'new-generation'
+    assert refreshed.question == cards[0].question
+    assert refreshed.key_points == cards[0].key_points
+    assert maintain.apply_reanchoring(settings, maintain.run_check(settings,corpus_of(paras))).version is None

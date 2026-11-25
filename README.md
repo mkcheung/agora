@@ -100,3 +100,33 @@ are edition-specific. The twelve Gutenberg sources contain fourteen works by
 eight authors. Sam Harris remains deferred. See CORPUS_UPGRADE_PLAN.md for the
 generation and review sequence. Tables are preserved as tables and translator
 material is excluded from author-attributed passages.
+
+## Modern-English edition (drafts)
+
+The edition reads original parser blocks offline and keeps translations outside
+Pinecone. Model calls require an explicit cumulative cap; the default is $10.
+The append-only spend ledger includes reservations for in-flight or unknown-cost
+calls and survives retries, restarts and changes of edition ID. Eight bounded
+workers share that ledger. Standard price estimates are recorded in edition.py;
+OpenAI input charges are conservatively booked at the cache-write upper rate.
+
+```sh
+.venv/bin/python edition.py plan
+.venv/bin/python edition.py pilot --max-usd 2
+.venv/bin/python edition.py build --max-usd 8
+.venv/bin/python edition.py judge --max-usd 10
+.venv/bin/python edition.py check
+.venv/bin/python edition.py read --work pg7370:main --chapter 5
+```
+
+The lower build cap leaves room for judging under the same total ledger. A cap
+stop preserves completed records; run the same command to resume with a larger
+explicit cap. Short packs share calls within a chapter; tables stay verbatim.
+`check` reports stale, moved and orphan records against the fresh parse. Notes
+appear beside their owners in the CLI reader. Flags and judge disagreements
+remain unresolved until reviewed; a partial or flagged draft is never a released
+edition. Back up the ignored `editions/drafts/` directory after paid work.
+
+The frozen translation prompt and separately hashed rules live in
+`edition_prompts/`. Prompt drift is checked with AST without importing the query
+graph. Streamlit and searching modern text remain later work in the plan.
