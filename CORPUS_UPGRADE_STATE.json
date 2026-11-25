@@ -1,9 +1,9 @@
 {
-  "status": "trusted_measurements_complete_activation_smoke_blocked_by_openai_credits",
+  "status": "G4_R1_one_Kant_application_smoke_passed_with_display_note",
   "branch": "corpus-upgrade",
   "starting_tag": "pre-corpus-upgrade",
-  "active_namespace": "epub-v1-04b8672ea20df6c7",
-  "query_graph_modified": false,
+  "active_namespace": "epub-v1-493ca312bc082c7e",
+  "query_graph_modified": true,
   "generations": {
     "G1": {
       "commit": "5f568ea",
@@ -111,11 +111,11 @@
     "latest_backup": "backups/edition-review-resume-20261125-111506"
   },
   "remaining": [
-    "Restore OpenAI API credits; finish the prepared G4/R1 staging graph smoke cases (currently zero completed). The four trusted v002 regrades are complete and must not be repeated.",
-    "After successful smoke tests, record changes, merge corpus-upgrade into main, then activate final corrected G4 and R1 together; run default-namespace smoke verification.",
-    "Apply R7 once, verify all refreshed fields, publish v003, and record a fresh trusted v003 baseline.",
-    "Resolve 48 remaining edition review cases under the existing $10 cumulative cap. Keep incomplete or unresolved drafts unreleased.",
-    "Retain old/superseded namespaces until soak and successful baseline; exact deletion approval is still required."
+    "G4 + R1 are applied locally on corpus-upgrade. Commit/merge and restart any already-running application process remain separate from the completed file edits.",
+    "The single authorized Kant application smoke test passed, with a cosmetic display wrapper-tag issue noted. Other authors/routes were not tested. Stop here; no further paid calls without new explicit authorization, and never repeat the four trusted v002 regrades.",
+    "R7 publication/v003 baseline is deferred; do not run further paid integrity grading without new explicit authorization.",
+    "Edition remains an unreleased partial draft with 48 review cases and a $10 cumulative edition cap; no edition work was performed in this activation.",
+    "Retain old/superseded namespaces; exact deletion approval is still required."
   ],
   "recovery": "Original namespace unchanged. Branch/tag and backups preserve original EPUBs, reports and raw quiz files. No deletions.",
   "r1_authorized": true,
@@ -150,7 +150,29 @@
     "raw_answer_audit": "248/248 saved without answer-call errors; namespace and saved SHA256 verified",
     "pre_activation_staging_receipt": "reports/pre-activation-staging-verification-20261125.json",
     "retrieval_delta_review": "reports/generation-mechanical-delta-review-20261125.json",
-    "G1_activation_patch_check": "passed against unchanged config.py and philosophy_query.py"
+    "G1_activation_patch_check": "passed against unchanged config.py and philosophy_query.py",
+    "G4_R1_local_activation": {
+      "checked_at": "2026-11-25T21:02:17.303126+00:00",
+      "default_and_effective_namespace": "epub-v1-493ca312bc082c7e",
+      "author_labels": "All six existing labels retained; Kant, Hume and Wollstonecraft added.",
+      "syntax": "Query graph compiled successfully.",
+      "focused_tests": "4 passed in 1.09s: tests/test_embedding_input.py and tests/test_smoke_runner.py",
+      "paid_api_calls": 0,
+      "live_application_smoke": "One user-authorized Kant question passed all ten flow assertions. Eight relevant Kant passages, five verified citations, zero rewrites or web fallback. Cosmetic display wrapper tags noted."
+    },
+    "Kant_application_smoke": {
+      "receipt": "reports/kant-application-smoke-20261125-210950.json",
+      "passed": true,
+      "questions": 1,
+      "chat_calls": 11,
+      "chat_token_totals": {
+        "input_tokens": 9207,
+        "output_tokens": 2650,
+        "total_tokens": 11857
+      },
+      "embedding_usage": "Not captured",
+      "display_note": "Modernization returned a readable answer but echoed the <responseAnswer> wrapper tags. Cosmetic issue observed; not fixed and no extra model call made."
+    }
   },
   "latest_backup": "backups/corpus-upgrade-trusted-measurements-20261125-113656",
   "backup_verified_files": 276,
@@ -407,13 +429,20 @@
     "target_namespace": "epub-v1-493ca312bc082c7e",
     "include_R1": true,
     "branch": "main",
-    "execution_note": "All four generations were separately measured before changing the active namespace. Activate the final corrected corpus with R1 in one commit; retain all intermediate namespaces and evidence.",
+    "execution_note": "User explicitly authorized the two application edits. G4 default namespace and R1 author labels are now applied in the corpus-upgrade working tree; no commit, main merge, or service restart was performed. Paid integrity grading remains stopped.",
     "prepared_patch": "reports/final-G4-R1-activation-20261125.patch",
     "candidate_graph_sha256": "d37b49e8814ab1d2c1583ec689d75247bb14f46bd2e06bda8c4f6d5953b2ee57",
     "before_config_sha256": "429b949c7ecb635560f0ae7f55c7318d35e21cc306539d75531fe99b56a6be1b",
-    "before_graph_sha256": "fe05d80e846e78f018b7021295c67db9e92337247c6406789c22a5ec8964e8b6"
+    "before_graph_sha256": "fe05d80e846e78f018b7021295c67db9e92337247c6406789c22a5ec8964e8b6",
+    "applied_branch": "corpus-upgrade",
+    "applied_locally": true
   },
-  "activation_blocker": {
+  "paid_api_policy": {
+    "integrity_grading": "Stopped at user request; no further paid integrity evaluations without new explicit authorization.",
+    "this_change": "No API requests; existing verified Pinecone collection reused.",
+    "latest_authorization": "User authorized one Kant application smoke test; completed. No further paid calls are authorized by this test."
+  },
+  "pre_activation_smoke_failure": {
     "provider": "OpenAI",
     "model": "gpt-5.4-mini",
     "http_status": 429,

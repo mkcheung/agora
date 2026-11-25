@@ -25,7 +25,8 @@ ANSWER_MODEL = "anthropic:claude-sonnet-5-5"
 load_dotenv()
 console = Console()
 Author = Literal["Thomas Hobbes", "John Locke", "Edmund Burke",
-                 "John Stuart Mill", "Adam Smith", "Sam Harris"]
+                 "John Stuart Mill", "Adam Smith", "Sam Harris",
+                 "Immanuel Kant", "David Hume", "Mary Wollstonecraft"]
 web_search_tool = langchain_tavily.TavilySearch(max_results=3)
 
 # Directive for model behavior - Translate Prose

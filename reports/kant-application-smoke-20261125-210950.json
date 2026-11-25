@@ -1,0 +1,881 @@
+{
+  "started_at": "2026-11-25T21:09:50.359143+00:00",
+  "question": "According to Kant, why is a good will good in itself rather than because of what it accomplishes?",
+  "scope": "One actual application invocation; no separate integrity judge.",
+  "calls": [
+    {
+      "run_id": "01a2148b-205e-72e2-9902-2fc11d99dfff",
+      "stage": "classify",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 680,
+          "output_tokens": 56,
+          "total_tokens": 736,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 56,
+          "prompt_tokens": 680,
+          "total_tokens": 736,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-2d62-7c30-b0fc-a2d7154c87e2",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 437,
+          "output_tokens": 47,
+          "total_tokens": 484,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 47,
+          "prompt_tokens": 437,
+          "total_tokens": 484,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-34c4-7b82-974c-a5d69db20b45",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 350,
+          "output_tokens": 53,
+          "total_tokens": 403,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 53,
+          "prompt_tokens": 350,
+          "total_tokens": 403,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-38d0-76f3-a2d6-629fec4843c1",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 415,
+          "output_tokens": 43,
+          "total_tokens": 458,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 43,
+          "prompt_tokens": 415,
+          "total_tokens": 458,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-3f1d-7f73-b8b6-5bcbb7037108",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 354,
+          "output_tokens": 48,
+          "total_tokens": 402,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 48,
+          "prompt_tokens": 354,
+          "total_tokens": 402,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-4650-7012-ab48-747cc442f722",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 313,
+          "output_tokens": 59,
+          "total_tokens": 372,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 59,
+          "prompt_tokens": 313,
+          "total_tokens": 372,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-4a69-7d31-ac64-612f1913559f",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 483,
+          "output_tokens": 54,
+          "total_tokens": 537,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 54,
+          "prompt_tokens": 483,
+          "total_tokens": 537,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-4fee-7173-af2c-9a53ea01ca10",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 275,
+          "output_tokens": 49,
+          "total_tokens": 324,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 49,
+          "prompt_tokens": 275,
+          "total_tokens": 324,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-543e-7400-b2d3-d202bda629a8",
+      "stage": "grade_documents",
+      "model": "gpt-5.4-mini",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 306,
+          "output_tokens": 57,
+          "total_tokens": 363,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 57,
+          "prompt_tokens": 306,
+          "total_tokens": 363,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": null,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-5.4-mini-2026-03-17"
+      }
+    },
+    {
+      "run_id": "01a2148b-5bd5-7193-98ee-eeb4dce8e072",
+      "stage": "generate",
+      "model": "claude-sonnet-5-5",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 4828,
+          "output_tokens": 1543,
+          "total_tokens": 6371,
+          "input_token_details": {
+            "cache_read": 0,
+            "cache_creation": 0,
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 0
+          },
+          "output_token_details": {
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "model": "claude-sonnet-5-5",
+        "usage": {
+          "cache_creation": {
+            "ephemeral_1h_input_tokens": 0,
+            "ephemeral_5m_input_tokens": 0
+          },
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "inference_geo": "global",
+          "input_tokens": 4828,
+          "output_tokens": 1543,
+          "output_tokens_details": {
+            "thinking_tokens": 0
+          },
+          "server_tool_use": null,
+          "service_tier": "standard",
+          "speed": "standard"
+        },
+        "model_name": "claude-sonnet-5-5"
+      }
+    },
+    {
+      "run_id": "01a2148b-8101-7a80-9934-91002c92699d",
+      "stage": "modernize",
+      "model": "gpt-6.2-sol",
+      "status": "completed",
+      "usage": [
+        {
+          "input_tokens": 766,
+          "output_tokens": 641,
+          "total_tokens": 1407,
+          "input_token_details": {
+            "audio": 0,
+            "cache_read": 0,
+            "cache_creation": 0
+          },
+          "output_token_details": {
+            "audio": 0,
+            "reasoning": 0
+          }
+        }
+      ],
+      "provider_usage": {
+        "token_usage": {
+          "completion_tokens": 641,
+          "prompt_tokens": 766,
+          "total_tokens": 1407,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0,
+            "text_tokens": null
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null
+          }
+        },
+        "model_name": "gpt-6.2-sol"
+      }
+    }
+  ],
+  "passed": true,
+  "usage_limit": "Chat-model usage only, when exposed by providers; query embedding tokens and hidden SDK retries are not measured.",
+  "identity": {
+    "namespace": "epub-v1-493ca312bc082c7e",
+    "graph_sha256": "d37b49e8814ab1d2c1583ec689d75247bb14f46bd2e06bda8c4f6d5953b2ee57",
+    "ask_sha256": "b4677186e6c325cb076bfe11f535f94f98ede84a9872ba783ecf0a900e5384fe"
+  },
+  "result": {
+    "is_philosophical": true,
+    "authors": [
+      "Immanuel Kant"
+    ],
+    "other_thinkers": [],
+    "rewrites": 0,
+    "grades": [
+      {
+        "passage_id": "pg5682:main:da98aac588868478b195:c0",
+        "relevant": true,
+        "reason": "The passage directly explains Kant\u2019s view that a good will has intrinsic worth by virtue of the volition itself, not by the results it produces or its usefulness."
+      },
+      {
+        "passage_id": "pg5682:main:ffeca56b237bc5bfd97e:c0",
+        "relevant": true,
+        "reason": "The passage explains Kant\u2019s view that qualities like self-control are only good when guided by a good will, directly addressing why a good will has unconditional intrinsic value rather than value based on outcomes."
+      },
+      {
+        "passage_id": "pg5682:main:63f1ea21bb5836cfc1e1:c0",
+        "relevant": true,
+        "reason": "The passage is about Kant\u2019s claim that only a good will is good without qualification and that its goodness does not depend on outcomes or success."
+      },
+      {
+        "passage_id": "pg5682:main:9014a6b8b0b11a084bc2:c0",
+        "relevant": true,
+        "reason": "The passage explains Kant\u2019s view that moral worth lies in the will\u2019s being determined by the conception of law itself, not by the expected effects or outcomes it produces."
+      },
+      {
+        "passage_id": "pg5682:main:627cc380bca54f87b8c4:c0",
+        "relevant": true,
+        "reason": "The passage discusses Kant\u2019s notion of a good will as something \u201cgood without a view to anything further\u201d and central to duty, which directly relates to why a good will is valuable in itself rather than by its results."
+      },
+      {
+        "passage_id": "pg5682:main:510fae9248cdf0bf743b:c0",
+        "relevant": true,
+        "reason": "The passage explains Kant\u2019s view that reason\u2019s true purpose is to produce a good will, which is good in itself and the supreme good, not merely as a means to happiness or other outcomes."
+      },
+      {
+        "passage_id": "pg5682:main:48bb081921cc9ade60cc:c1",
+        "relevant": true,
+        "reason": "The passage explains Kant\u2019s view that a good will is good because of its form as universal lawgiving (autonomy), not because of any outcomes or objects it produces."
+      },
+      {
+        "passage_id": "pg5682:main:dd2353f1eac41af81c78:c0",
+        "relevant": true,
+        "reason": "The passage discusses Kant\u2019s view of the good will, objective laws, imperatives, and the distinction between a holy will and human will, which is directly related to why a good will is good in itself."
+      }
+    ],
+    "retrieved": [
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:da98aac588868478b195",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "First Section",
+          "division_title": "TRANSITION FROM THE COMMON RATIONAL KNOWLEDGE OF MORALITY TO THE PHILOSOPHICAL",
+          "embedded_text_sha256": "35d9b0d8ed735ff77155f4c1096144e5d74bb5637f68f7147a63440b86f84bca",
+          "locator": "First Section, paragraph 3 (edition-specific)",
+          "paragraph": 3.0,
+          "passage_id": "pg5682:main:da98aac588868478b195:c0",
+          "source_block": 58.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "A good will is good not because of what it performs or effects, not by its aptness for the attainment of some proposed end, but simply by virtue of the volition; that is, it is good in itself, and considered by itself is to be esteemed much higher than all that can be brought about by it in favour of any inclination, nay even of the sum total of all inclinations. Even if it should happen that, owing to special disfavour of fortune, or the niggardly provision of a step-motherly nature, this will should wholly lack power to accomplish its purpose, if with its greatest efforts it should yet achieve nothing, and there should remain only the good will (not, to be sure, a mere wish, but the summoning of all means in our power), then, like a jewel, it would still shine by its own light, as a thing which has its whole value in itself. Its usefulness or fruitlessness can neither add nor take away anything from this value. It would be, as it were, only the setting to enable us to handle it the more conveniently in common commerce, or to attract to it the attention of those who are not yet connoisseurs, but not to recommend it to true connoisseurs, or to determine its value."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:ffeca56b237bc5bfd97e",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "First Section",
+          "division_title": "TRANSITION FROM THE COMMON RATIONAL KNOWLEDGE OF MORALITY TO THE PHILOSOPHICAL",
+          "embedded_text_sha256": "dd3a286799641443a39c6f61e66bf7b35554c9dee27534a03282961aa6425f7c",
+          "locator": "First Section, paragraph 2 (edition-specific)",
+          "paragraph": 2.0,
+          "passage_id": "pg5682:main:ffeca56b237bc5bfd97e:c0",
+          "source_block": 57.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "There are even some qualities which are of service to this good will itself and may facilitate its action, yet which have no intrinsic unconditional value, but always presuppose a good will, and this qualifies the esteem that we justly have for them and does not permit us to regard them as absolutely good. Moderation in the affections and passions, self-control, and calm deliberation are not only good in many respects, but even seem to constitute part of the intrinsic worth of the person; but they are far from deserving to be called good without qualification, although they have been so unconditionally praised by the ancients. For without the principles of a good will, they may become extremely bad, and the coolness of a villain not only makes him far more dangerous, but also directly makes him more abominable in our eyes than he would have been without it."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:63f1ea21bb5836cfc1e1",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "First Section",
+          "division_title": "TRANSITION FROM THE COMMON RATIONAL KNOWLEDGE OF MORALITY TO THE PHILOSOPHICAL",
+          "embedded_text_sha256": "2b9c86645d1b43d4a1c5bf69e90ad8fc97ab21b41637c92938b01e4659ba8afd",
+          "locator": "First Section, paragraph 1 (edition-specific)",
+          "paragraph": 1.0,
+          "passage_id": "pg5682:main:63f1ea21bb5836cfc1e1:c0",
+          "source_block": 56.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "Nothing can possibly be conceived in the world, or even out of it, which can be called good, without qualification, except a good will. Intelligence, wit, judgement, and the other talents of the mind, however they may be named, or courage, resolution, perseverance, as qualities of temperament, are undoubtedly good and desirable in many respects; but these gifts of nature may also become extremely bad and mischievous if the will which is to make use of them, and which, therefore, constitutes what is called character, is not good. It is the same with the gifts of fortune. Power, riches, honour, even health, and the general well-being and contentment with one's condition which is called happiness, inspire pride, and often presumption, if there is not a good will to correct the influence of these on the mind, and with this also to rectify the whole principle of acting and adapt it to its end. The sight of a being who is not adorned with a single feature of a pure and good will, enjoying unbroken prosperity, can never give pleasure to an impartial rational spectator. Thus a good will appears to constitute the indispensable condition even of being worthy of happiness."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:9014a6b8b0b11a084bc2",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "First Section",
+          "division_title": "TRANSITION FROM THE COMMON RATIONAL KNOWLEDGE OF MORALITY TO THE PHILOSOPHICAL",
+          "embedded_text_sha256": "8d3f236a9aae01129453dea9c2b4bda149b22b690d93d07148e4a361dc869734",
+          "locator": "First Section, paragraph 16 (edition-specific)",
+          "paragraph": 16.0,
+          "passage_id": "pg5682:main:9014a6b8b0b11a084bc2:c0",
+          "source_block": 72.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "Thus the moral worth of an action does not lie in the effect expected from it, nor in any principle of action which requires to borrow its motive from this expected effect. For all these effects- agreeableness of one's condition and even the promotion of the happiness of others- could have been also brought about by other causes, so that for this there would have been no need of the will of a rational being; whereas it is in this alone that the supreme and unconditional good can be found. The pre-eminent good which we call moral can therefore consist in nothing else than the conception of law in itself, which certainly is only possible in a rational being, in so far as this conception, and not the expected effect, determines the will. This is a good which is already present in the person who acts accordingly, and we have not to wait for it to appear first in the result."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:627cc380bca54f87b8c4",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "First Section",
+          "division_title": "TRANSITION FROM THE COMMON RATIONAL KNOWLEDGE OF MORALITY TO THE PHILOSOPHICAL",
+          "embedded_text_sha256": "dd421f1dbd33532384e21ce105556186b6b5e6976c7f13c6ff315c7763037552",
+          "locator": "First Section, paragraph 8 (edition-specific)",
+          "paragraph": 8.0,
+          "passage_id": "pg5682:main:627cc380bca54f87b8c4:c0",
+          "source_block": 63.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "We have then to develop the notion of a will which deserves to be highly esteemed for itself and is good without a view to anything further, a notion which exists already in the sound natural understanding, requiring rather to be cleared up than to be taught, and which in estimating the value of our actions always takes the first place and constitutes the condition of all the rest. In order to do this, we will take the notion of duty, which includes that of a good will, although implying certain subjective restrictions and hindrances. These, however, far from concealing it, or rendering it unrecognizable, rather bring it out by contrast and make it shine forth so much the brighter."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:510fae9248cdf0bf743b",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "First Section",
+          "division_title": "TRANSITION FROM THE COMMON RATIONAL KNOWLEDGE OF MORALITY TO THE PHILOSOPHICAL",
+          "embedded_text_sha256": "d133a6b24c7255d7e8bfcb5665f43d10755d8a69b942889401b979b555e62763",
+          "locator": "First Section, paragraph 7 (edition-specific)",
+          "paragraph": 7.0,
+          "passage_id": "pg5682:main:510fae9248cdf0bf743b:c0",
+          "source_block": 62.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "For as reason is not competent to guide the will with certainty in regard to its objects and the satisfaction of all our wants (which it to some extent even multiplies), this being an end to which an implanted instinct would have led with much greater certainty; and since, nevertheless, reason is imparted to us as a practical faculty, i.e., as one which is to have influence on the will, therefore, admitting that nature generally in the distribution of her capacities has adapted the means to the end, its true destination must be to produce a will, not merely good as a means to something else, but good in itself, for which reason was absolutely necessary. This will then, though not indeed the sole and complete good, must be the supreme good and the condition of every other, even of the desire of happiness. Under these circumstances, there is nothing inconsistent with the wisdom of nature in the fact that the cultivation of the reason, which is requisite for the first and unconditional purpose, does in many ways interfere, at least in this life, with the attainment of the second, which is always conditional, namely, happiness. Nay, it may even reduce it to nothing, without nature thereby failing of her purpose. For reason recognizes the establishment of a good will as its highest practical destination, and in attaining this purpose is capable only of a satisfaction of its own proper kind, namely that from the attainment of an end, which end again is determined by reason only, notwithstanding that this may involve many a disappointment to the ends of inclination."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:48bb081921cc9ade60cc",
+          "chunk": 1.0,
+          "chunk_count": 2.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "Second Section",
+          "division_title": "TRANSITION FROM POPULAR MORAL PHILOSOPHY TO THE METAPHYSIC OF MORALS",
+          "embedded_text_sha256": "20e358ecfeddd45e5af47ff9519a04266fbf78ff92dfda3a27e55c4897d6007d",
+          "locator": "Second Section, paragraph 89 (edition-specific)",
+          "paragraph": 89.0,
+          "passage_id": "pg5682:main:48bb081921cc9ade60cc:c1",
+          "source_block": 31.0,
+          "source_href": "4863069495065719703_5682-h-1.htm.xhtml",
+          "source_id": "pg5682",
+          "subheading": "Classification of all Principles of Morality which can be founded on the Conception of Heteronomy",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "of the subject adapted to receive it. An absolutely good will, then, the principle of which must be a categorical imperative, will be indeterminate as regards all objects and will contain merely the form of volition generally, and that as autonomy, that is to say, the capability of the maxims of every good will to make themselves a universal law, is itself the only law which the will of every rational being imposes on itself, without needing to assume any spring or interest as a foundation."
+      },
+      {
+        "metadata": {
+          "author": "Immanuel Kant",
+          "block_id": "pg5682:main:dd2353f1eac41af81c78",
+          "chunk": 0.0,
+          "chunk_count": 1.0,
+          "content_type": "prose",
+          "corpus_version": "epub-v1-493ca312bc082c7e",
+          "division": "Second Section",
+          "division_title": "TRANSITION FROM POPULAR MORAL PHILOSOPHY TO THE METAPHYSIC OF MORALS",
+          "embedded_text_sha256": "2ae1122cb2356228936d11ae7f35b77c3b320578b6a999c64d36ee0103a6554f",
+          "locator": "Second Section, paragraph 16 (edition-specific)",
+          "paragraph": 16.0,
+          "passage_id": "pg5682:main:dd2353f1eac41af81c78:c0",
+          "source_block": 105.0,
+          "source_href": "4863069495065719703_5682-h-0.htm.xhtml",
+          "source_id": "pg5682",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "work_id": "pg5682:main"
+        },
+        "text": "A perfectly good will would therefore be equally subject to objective laws (viz., laws of good), but could not be conceived as obliged thereby to act lawfully, because of itself from its subjective constitution it can only be determined by the conception of good. Therefore no imperatives hold for the Divine will, or in general for a holy will; ought is here out of place, because the volition is already of itself necessarily in unison with the law. Therefore imperatives are only formulae to express the relation of objective laws of all volition to the subjective imperfection of the will of this or that rational being, e.g., the human will."
+      }
+    ],
+    "relevant_passage_ids": [
+      "pg5682:main:da98aac588868478b195:c0",
+      "pg5682:main:ffeca56b237bc5bfd97e:c0",
+      "pg5682:main:63f1ea21bb5836cfc1e1:c0",
+      "pg5682:main:9014a6b8b0b11a084bc2:c0",
+      "pg5682:main:627cc380bca54f87b8c4:c0",
+      "pg5682:main:510fae9248cdf0bf743b:c0",
+      "pg5682:main:48bb081921cc9ade60cc:c1",
+      "pg5682:main:dd2353f1eac41af81c78:c0"
+    ],
+    "response": {
+      "Answer": "Kant holds that a good will is good because of the volition itself, not because of what it brings about. He says it is not good \"because of what it performs or effects,\" nor because it is apt for reaching some proposed end; it is good \"simply by virtue of the volition\" (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 3 (edition-specific)). His reasons, as the passages give them, are as follows.\n\n1. Success or failure does not change its value. Even if fortune or a stingy nature left the will unable to accomplish anything, it would \"like a jewel\" still shine by its own light. Its usefulness or fruitlessness can neither add to its value nor take away from it. Kant adds that this is not a mere wish but the summoning of all means in our power (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 3 (edition-specific)).\n\n2. Everything else is good only conditionally. Talents of mind, qualities of temperament and gifts of fortune can become extremely bad if the will using them is not good. Only a good will is good \"without qualification\" (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 1 (edition-specific)). Qualities such as self-control and calm deliberation presuppose a good will, and without it the coolness of a villain makes him more dangerous and more abominable (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 2 (edition-specific)).\n\n3. Effects could have come from other causes. The agreeableness of one's condition and even the promotion of others' happiness could be produced by other causes, so they do not need the will of a rational being. The supreme and unconditional good is found in that will alone. Moral worth therefore lies in the conception of law determining the will, not in the expected effect. This good is already present in the person who acts, and we need not wait for a result (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 16 (edition-specific)).\n\n4. Reason's purpose points the same way. Kant argues that reason's true destination is to produce a will \"not merely good as a means to something else, but good in itself.\" He calls this will the supreme good and the condition of every other good, even the desire for happiness, though not the sole and complete good (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 7 (edition-specific)).\n\nThe passages do not give a further argument beyond these for why the will has this intrinsic worth. Here Kant largely asserts it and supports it by contrast with other goods and by his account of reason's purpose.",
+      "Citations": [
+        {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "A good will is good not because of what it performs or effects",
+          "passage_id": "pg5682:main:da98aac588868478b195:c0",
+          "locator": "First Section, paragraph 3 (edition-specific)"
+        },
+        {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "Nothing can possibly be conceived in the world, or even out of it, which can be called good, without qualification, except a good will.",
+          "passage_id": "pg5682:main:63f1ea21bb5836cfc1e1:c0",
+          "locator": "First Section, paragraph 1 (edition-specific)"
+        },
+        {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "the coolness of a villain not only makes him far more dangerous",
+          "passage_id": "pg5682:main:ffeca56b237bc5bfd97e:c0",
+          "locator": "First Section, paragraph 2 (edition-specific)"
+        },
+        {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "Thus the moral worth of an action does not lie in the effect expected from it",
+          "passage_id": "pg5682:main:9014a6b8b0b11a084bc2:c0",
+          "locator": "First Section, paragraph 16 (edition-specific)"
+        },
+        {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "a will, not merely good as a means to something else, but good in itself",
+          "passage_id": "pg5682:main:510fae9248cdf0bf743b:c0",
+          "locator": "First Section, paragraph 7 (edition-specific)"
+        }
+      ]
+    },
+    "checks": [
+      {
+        "citation": {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "A good will is good not because of what it performs or effects",
+          "passage_id": "pg5682:main:da98aac588868478b195:c0",
+          "locator": "First Section, paragraph 3 (edition-specific)"
+        },
+        "status": "ok"
+      },
+      {
+        "citation": {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "Nothing can possibly be conceived in the world, or even out of it, which can be called good, without qualification, except a good will.",
+          "passage_id": "pg5682:main:63f1ea21bb5836cfc1e1:c0",
+          "locator": "First Section, paragraph 1 (edition-specific)"
+        },
+        "status": "ok"
+      },
+      {
+        "citation": {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "the coolness of a villain not only makes him far more dangerous",
+          "passage_id": "pg5682:main:ffeca56b237bc5bfd97e:c0",
+          "locator": "First Section, paragraph 2 (edition-specific)"
+        },
+        "status": "ok"
+      },
+      {
+        "citation": {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "Thus the moral worth of an action does not lie in the effect expected from it",
+          "passage_id": "pg5682:main:9014a6b8b0b11a084bc2:c0",
+          "locator": "First Section, paragraph 16 (edition-specific)"
+        },
+        "status": "ok"
+      },
+      {
+        "citation": {
+          "author": "Immanuel Kant",
+          "work": "Fundamental Principles of the Metaphysic of Morals",
+          "chapter": null,
+          "section": null,
+          "quote": "a will, not merely good as a means to something else, but good in itself",
+          "passage_id": "pg5682:main:510fae9248cdf0bf743b:c0",
+          "locator": "First Section, paragraph 7 (edition-specific)"
+        },
+        "status": "ok"
+      }
+    ],
+    "display_answer": "<responseAnswer>\nKant holds that a good will is good because of the volition itself, not because of what it brings about. He says it is not good \"because of what it performs or effects,\" (In Modern Prose: because of what it does or brings about) nor because it is apt for reaching some proposed end; it is good \"simply by virtue of the volition\" (In Modern Prose: simply because of the act of willing itself) (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 3 (edition-specific)). His reasons, as the passages give them, are as follows.\n\n1. Success or failure does not change its value. Even if fortune or a stingy nature left the will unable to accomplish anything, it would \"like a jewel\" still shine by its own light. Its usefulness or fruitlessness can neither add to its value nor take away from it. Kant adds that this is not a mere wish but the summoning of all means in our power (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 3 (edition-specific)).\n\n2. Everything else is good only conditionally. Talents of mind, qualities of temperament and gifts of fortune can become extremely bad if the will using them is not good. Only a good will is good \"without qualification\" (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 1 (edition-specific)). Qualities such as self-control and calm deliberation presuppose a good will, and without it the coolness of a villain makes him more dangerous and more abominable (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 2 (edition-specific)).\n\n3. Effects could have come from other causes. The agreeableness of one's condition and even the promotion of others' happiness could be produced by other causes, so they do not need the will of a rational being. The supreme and unconditional good is found in that will alone. Moral worth therefore lies in the conception of law determining the will, not in the expected effect. This good is already present in the person who acts, and we need not wait for a result (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 16 (edition-specific)).\n\n4. Reason's purpose points the same way. Kant argues that reason's true destination is to produce a will \"not merely good as a means to something else, but good in itself.\" He calls this will the supreme good and the condition of every other good, even the desire for happiness, though not the sole and complete good (Immanuel Kant, Fundamental Principles of the Metaphysic of Morals, First Section, paragraph 7 (edition-specific)).\n\nThe passages do not give a further argument beyond these for why the will has this intrinsic worth. Here Kant largely asserts it and supports it by contrast with other goods and by his account of reason's purpose.\n</responseAnswer>"
+  },
+  "assertions": {
+    "philosophical": true,
+    "recognized_kant": true,
+    "no_outside_thinker": true,
+    "retrieved_kant_passages": true,
+    "at_least_three_relevant_corpus_passages": true,
+    "answer_present": true,
+    "kant_citations": true,
+    "all_citations_verified": true,
+    "display_answer_present": true,
+    "no_web_fallback": true
+  },
+  "finished_at": "2026-11-25T21:10:24.840100+00:00",
+  "chat_token_totals": {
+    "input_tokens": 9207,
+    "output_tokens": 2650,
+    "total_tokens": 11857
+  },
+  "recorded_chat_calls": 11,
+  "manual_review": {
+    "answer_and_citations": "Answer addresses the Kant question; all five structured citations passed source/quote checks.",
+    "display_note": "Modernization returned a readable answer but echoed the <responseAnswer> wrapper tags. Cosmetic issue observed; not fixed and no extra model call made.",
+    "scope_limit": "Only the single Kant question was run; other authors and routes were not exercised."
+  },
+  "usage_by_model": {
+    "gpt-5.4-mini": {
+      "calls": 9,
+      "input_tokens": 3613,
+      "output_tokens": 466
+    },
+    "claude-sonnet-5-5": {
+      "calls": 1,
+      "input_tokens": 4828,
+      "output_tokens": 1543
+    },
+    "gpt-6.2-sol": {
+      "calls": 1,
+      "input_tokens": 766,
+      "output_tokens": 641
+    }
+  }
+}
