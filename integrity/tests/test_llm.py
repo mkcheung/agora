@@ -89,6 +89,32 @@ def test_transport_retries_exhausted():
         c.structured(system="s", user="u", schema=Out, purpose="p")
 
 
+@pytest.mark.parametrize("message", [
+    "Error code: 429 - insufficient_quota",
+    "Error code: 403 - credit_balance_exhausted",
+    "Error code: 400 - Your credit balance is too low to access the Anthropic API.",
+])
+def test_credit_failure_stops_retries_and_later_client_calls(message):
+    class OtherOut(BaseModel):
+        text: str
+
+    c = make_client([RuntimeError(message)])
+    with pytest.raises(llm.ModelCallError, match="credits exhausted"):
+        c.structured(system="s", user="u", schema=Out, purpose="first")
+    with pytest.raises(llm.ModelCallError, match="later: provider credits exhausted"):
+        c.structured(system="s", user="u", schema=OtherOut, purpose="later")
+    assert c._structured_cache[Out].calls == 1 and c.sleeps == []
+    assert OtherOut not in c._structured_cache
+
+
+def test_temporary_rate_limit_still_retries_without_stopping_client():
+    ok = {"raw": None, "parsed": Out(answer="x"), "parsing_error": None}
+    c = make_client([RuntimeError("429 rate_limit_exceeded"), ok, ok])
+    assert c.structured(system="s", user="u", schema=Out, purpose="first").answer == "x"
+    assert c.structured(system="s", user="u", schema=Out, purpose="later").answer == "x"
+    assert c._structured_cache[Out].calls == 3 and c.sleeps == [0.5]
+
+
 def test_parse_failure_retried_once_then_raises():
     bad = {"raw": None, "parsed": None, "parsing_error": ValueError("x")}
     ok = {"raw": None, "parsed": {"answer": "y"}, "parsing_error": None}

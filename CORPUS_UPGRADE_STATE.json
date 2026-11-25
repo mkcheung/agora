@@ -1,5 +1,5 @@
 {
-  "status": "offline_complete_live_blocked_by_credit_balance_exhausted",
+  "status": "trusted_measurements_complete_activation_smoke_blocked_by_openai_credits",
   "branch": "corpus-upgrade",
   "starting_tag": "pre-corpus-upgrade",
   "active_namespace": "epub-v1-04b8672ea20df6c7",
@@ -13,29 +13,58 @@
       "uploaded_verified": true,
       "v001_run": "r-20261125-004053",
       "v001_grader": "g-eaa3d7",
-      "v002_baseline": null
+      "v002_baseline": "r-20261125-185253",
+      "v002_run": "r-20261125-025823",
+      "v002_grade_trust": "TRUSTED",
+      "needs_regrade": false,
+      "raw_answers_complete": true,
+      "raw_sha256": "4820595045a33e79b6fde7067ca91c925d2e89d426876c5938e75b6d27fdd00a",
+      "v002_graded_run": "r-20261125-185253"
     },
     "G2": {
       "commit": "011eab3",
       "namespace": "epub-v1-ca56b9ef110f9669",
       "blocks": 7913,
       "chunks": 8937,
-      "uploaded_verified": false
+      "uploaded_verified": true,
+      "verification_receipt": "reports/epub-v1-ca56b9ef110f9669-verification.json",
+      "worktree": "/private/tmp/agora-corpus-g2-20261124-resume",
+      "v002_run": "r-20261125-025955",
+      "v002_grade_trust": "TRUSTED",
+      "needs_regrade": false,
+      "raw_answers_complete": true,
+      "raw_sha256": "6aab574ecce42f6431b066d2f002317078030ce95dbb2c2f84aa57848c63f247",
+      "v002_graded_run": "r-20261125-185300"
     },
     "G3": {
       "commit": "c962220",
       "namespace": "epub-v1-6e66750471be0619",
       "blocks": 7913,
       "chunks": 8937,
-      "uploaded_verified": false
+      "uploaded_verified": true,
+      "verification_receipt": "reports/epub-v1-6e66750471be0619-verification.json",
+      "worktree": "/private/tmp/agora-corpus-g3-20261124-resume",
+      "v002_run": "r-20261125-030003",
+      "v002_grade_trust": "TRUSTED",
+      "needs_regrade": false,
+      "raw_answers_complete": true,
+      "raw_sha256": "6dfcf40286eb9bdec36226e88c559ed01626b0d4eecbe55eded310e07f896cd8",
+      "v002_graded_run": "r-20261125-185309"
     },
     "G4_review_corrections": {
       "namespace": "epub-v1-493ca312bc082c7e",
       "blocks": 7912,
       "chunks": 8936,
-      "uploaded_verified": false,
+      "uploaded_verified": true,
       "declared_passage_deltas": 11,
-      "commit": "053467c"
+      "commit": "053467c",
+      "verification_receipt": "reports/epub-v1-493ca312bc082c7e-verification.json",
+      "v002_run": "r-20261125-030012",
+      "v002_grade_trust": "TRUSTED",
+      "needs_regrade": false,
+      "raw_answers_complete": true,
+      "raw_sha256": "fa9b870d38813718b06ebc04d431659debf1f36b083a8d1385075a6d1092e703",
+      "v002_graded_run": "r-20261125-185316"
     }
   },
   "sheets": {
@@ -54,30 +83,38 @@
   "edition": {
     "id": "modern-625a33559a9807f4",
     "cap_usd": 10,
-    "booked_usd": 0.8655219999999996,
+    "booked_usd": 1.600149999999999,
     "records": 92,
     "released": false,
     "scope": "resumable partial per user instruction",
-    "remaining": "resolve flags and judge disagreements; current checks require fresh bound judge receipts",
+    "remaining": "Resolve 48 remaining review cases. Three targeted corrections have passed fresh independent judgments; the fourth remains flagged. Edition remains partial and unreleased.",
     "current_check": {
       "alignment": {
         "valid": 92
       },
-      "missing_judge": 69,
-      "release_ready": false,
-      "total": 7912,
       "translated": 92,
-      "unresolved": 56
-    }
+      "total": 7912,
+      "missing_judge": 0,
+      "unresolved": 48,
+      "release_ready": false
+    },
+    "review_packet": "reports/edition-review-current-20261125.json",
+    "code_flag_review_receipt": "reports/edition-code-flag-review-20261124.json",
+    "targeted_revision_receipts": [
+      "reports/edition-targeted-corrections-20261125.json",
+      "reports/edition-targeted-corrections-round2-20261125.json",
+      "reports/edition-targeted-corrections-round3-20261125.json"
+    ],
+    "previous_review_packets": [
+      "reports/edition-review-resume-20261124.json"
+    ],
+    "latest_backup": "backups/edition-review-resume-20261125-111506"
   },
   "remaining": [
-    "Restore OpenAI API credits; fresh integrity quiz --sheet v002 --namespace G1.",
-    "Merge corpus-upgrade to main before activation; advisory activation script; activate G1 and R1 Author literals together; smoke graph per new author and ask.",
-    "Use G2 checkpoint in an isolated worktree with exact backed-up EPUB files; prepare namespace equality, upload and verify; v002 quiz and compare G1 baseline -> G2; activate.",
-    "Use G3 checkpoint likewise; upload/verify; v002 quiz and compare G2 -> G3; activate.",
-    "Measure G4 review corrections on v002 and compare G3 -> G4; activate final corrected source corpus.",
-    "Apply R7 once after final generation; verify all refreshed fields; publish v003 and record a fresh v003 baseline.",
-    "Resume the authorized partial edition build/judging under the existing $10 cumulative ledger once credits return; never release unresolved or incomplete drafts.",
+    "Restore OpenAI API credits; finish the prepared G4/R1 staging graph smoke cases (currently zero completed). The four trusted v002 regrades are complete and must not be repeated.",
+    "After successful smoke tests, record changes, merge corpus-upgrade into main, then activate final corrected G4 and R1 together; run default-namespace smoke verification.",
+    "Apply R7 once, verify all refreshed fields, publish v003, and record a fresh trusted v003 baseline.",
+    "Resolve 48 remaining edition review cases under the existing $10 cumulative cap. Keep incomplete or unresolved drafts unreleased.",
     "Retain old/superseded namespaces until soak and successful baseline; exact deletion approval is still required."
   ],
   "recovery": "Original namespace unchanged. Branch/tag and backups preserve original EPUBs, reports and raw quiz files. No deletions.",
@@ -98,13 +135,295 @@
     "latest_checks": "All identified findings fixed and rechecked independently."
   },
   "validation": {
-    "full_suite": "627 passed in 52.04s",
-    "ruff": "passed",
+    "full_suite": "637 passed in 60.86s, offline with AGORA_NAMESPACE set to final G4",
+    "ruff": "changed Python files passed",
     "git_diff_check": "passed",
     "portable_test_check": "missing-EPUB simulation passed; integration tests skipped",
-    "sheet_check": "v002 62/62 ok",
-    "latest_namespace": "epub-v1-493ca312bc082c7e"
+    "sheet_check": "2026-11-24 resumed: v002 62/62 ok against G4",
+    "latest_namespace": "epub-v1-493ca312bc082c7e",
+    "live_staging": {
+      "G2": 8937,
+      "G3": 8937,
+      "G4_review_corrections": 8936,
+      "all_logical_works_checked": 14
+    },
+    "raw_answer_audit": "248/248 saved without answer-call errors; namespace and saved SHA256 verified",
+    "pre_activation_staging_receipt": "reports/pre-activation-staging-verification-20261125.json",
+    "retrieval_delta_review": "reports/generation-mechanical-delta-review-20261125.json",
+    "G1_activation_patch_check": "passed against unchanged config.py and philosophy_query.py"
   },
-  "latest_backup": "backups/corpus-upgrade-reviewed-20261124-172931",
-  "backup_verified_files": 67
+  "latest_backup": "backups/corpus-upgrade-trusted-measurements-20261125-113656",
+  "backup_verified_files": 276,
+  "live_resume": {
+    "checked_at": "2026-11-25T02:44:40.620509+00:00",
+    "openai_embedding_probe": {
+      "ok": true,
+      "model": "text-embedding-3-small",
+      "dimensions": 1024,
+      "tokens": 7
+    },
+    "g1_v002_run": "r-20261125-022259",
+    "edition_judging_resumed": true,
+    "active_namespace_unchanged": true,
+    "openai_judge_reachable": true,
+    "anthropic_answer_model": "anthropic:claude-sonnet-5-5",
+    "anthropic_error": "HTTP 400 invalid_request_error: credit balance too low",
+    "finished_at": "2026-11-25T02:46:03.715150+00:00",
+    "activation_performed": false
+  },
+  "latest_attempt": {
+    "id": "r-20261125-025823",
+    "status": "answers_complete_grading_untrusted",
+    "sheet": "v002",
+    "namespace": "epub-v1-072397d01f31c73d",
+    "saved_successful_answers": 62,
+    "saved_error_answers": 0,
+    "reason": "OpenAI credit_balance_exhausted during independent grading",
+    "use_as_baseline": false,
+    "retry": "Regrade the saved source run after restoring OpenAI credits; do not repeat the Anthropic answers."
+  },
+  "previous_backup": "backups/corpus-upgrade-answers-saved-20261124-221500",
+  "interrupted_attempts": [
+    {
+      "id": "r-20261125-010820",
+      "reason": "OpenAI credit_balance_exhausted",
+      "use_as_baseline": false,
+      "retry": "start fresh v002/G1 run; preserve errored receipt"
+    },
+    {
+      "id": "r-20261125-022259",
+      "sheet": "v002",
+      "namespace": "epub-v1-072397d01f31c73d",
+      "reason": "Anthropic credit balance too low",
+      "saved_successful_answers": 42,
+      "saved_error_answers": 20,
+      "grading": "interrupted after 25 cards; no completed scorecard",
+      "use_as_baseline": false,
+      "retry": "start a fresh explicit v002/G1 run after restoring Anthropic credits; retain both interrupted receipts"
+    },
+    {
+      "id": "r-20261125-024904",
+      "sheet": "v002",
+      "namespace": "epub-v1-072397d01f31c73d",
+      "reason": "Anthropic still reports insufficient credits after user-reported top-up",
+      "saved_successful_answers": 0,
+      "saved_error_answers": 56,
+      "grading": "not started",
+      "use_as_baseline": false,
+      "retry": "Confirm funded organization owns the configured .env API key; verify one minimal request succeeds, then start a fresh v002/G1 run."
+    }
+  ],
+  "funding_recheck": {
+    "checked_at": "2026-11-25T02:59:29.608408+00:00",
+    "user_reported_credits_added": true,
+    "effective_key_source": "project .env",
+    "ambient_key_override": false,
+    "endpoint_host": "api.anthropic.com",
+    "minimal_request_receipt": "reports/anthropic-credit-recheck-20261125-025756.json",
+    "result": "minimal request succeeded",
+    "account_confirmation_pending": false,
+    "user_confirmed_same_key_organization": true,
+    "user_confirmed_positive_balance": true,
+    "minimal_request_receipts": [
+      "reports/anthropic-credit-recheck-20261125-025058.json",
+      "reports/anthropic-credit-recheck-20261125-025506.json",
+      "reports/anthropic-credit-recheck-20261125-025756.json"
+    ],
+    "latest_request_id": "req_011ChNtiy9dCxVaPDtgpxUWH",
+    "support_packet": "reports/anthropic-credit-support-20261124.json",
+    "supplemental_backup": "backups/corpus-upgrade-confirmed-credit-check-20261124-185622"
+  },
+  "quiz_credit_guard": {
+    "implemented": true,
+    "behavior": "Abort on first provider credit error without retries, later cards, or grading; refuse saved credit-error rows on --resume.",
+    "grader_version": "g-eaa3d7",
+    "focused_tests": "35 passed",
+    "ruff": "passed",
+    "full_suite": "633 passed in 60.25s"
+  },
+  "measurement_execution": {
+    "sheet": "v002",
+    "grader": "g-eaa3d7",
+    "mode": "Independent read-only namespace quizzes in separate data roots; compare in G1 -> G2 -> G3 -> G4 order before activation.",
+    "data_roots": {
+      "G1": "integrity_data",
+      "G2": "integrity_data",
+      "G3": "integrity_data",
+      "G4_review_corrections": "integrity_data"
+    },
+    "runs": {
+      "G1": {
+        "run_id": "r-20261125-025823",
+        "status": "complete",
+        "namespace": "epub-v1-072397d01f31c73d",
+        "grader": "g-eaa3d7",
+        "sheet_hash": "b788cd994d35a05dd3b1936aa58a997c81d50cbad9a875b9ca07a410abf4bd47",
+        "saved": 62,
+        "errors": 0,
+        "trust": "UNTRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-025823"
+      },
+      "G2": {
+        "run_id": "r-20261125-025955",
+        "status": "complete",
+        "namespace": "epub-v1-ca56b9ef110f9669",
+        "grader": "g-eaa3d7",
+        "sheet_hash": "b788cd994d35a05dd3b1936aa58a997c81d50cbad9a875b9ca07a410abf4bd47",
+        "saved": 62,
+        "errors": 0,
+        "trust": "UNTRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-025955"
+      },
+      "G3": {
+        "run_id": "r-20261125-030003",
+        "status": "complete",
+        "namespace": "epub-v1-6e66750471be0619",
+        "grader": "g-eaa3d7",
+        "sheet_hash": "b788cd994d35a05dd3b1936aa58a997c81d50cbad9a875b9ca07a410abf4bd47",
+        "saved": 62,
+        "errors": 0,
+        "trust": "UNTRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-030003"
+      },
+      "G4_review_corrections": {
+        "run_id": "r-20261125-030012",
+        "status": "complete",
+        "namespace": "epub-v1-493ca312bc082c7e",
+        "grader": "g-eaa3d7",
+        "sheet_hash": "b788cd994d35a05dd3b1936aa58a997c81d50cbad9a875b9ca07a410abf4bd47",
+        "saved": 62,
+        "errors": 0,
+        "trust": "UNTRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-030012"
+      }
+    },
+    "original_data_roots": {
+      "G1": "integrity_data",
+      "G2": "reports/corpus-measurements-20261124/G2",
+      "G3": "reports/corpus-measurements-20261124/G3",
+      "G4_review_corrections": "reports/corpus-measurements-20261124/G4"
+    },
+    "regrade_sources": {
+      "G1": "r-20261125-025823",
+      "G2": "r-20261125-025955",
+      "G3": "r-20261125-030003",
+      "G4_review_corrections": "r-20261125-030012"
+    },
+    "raw_answers_saved": 248,
+    "judged_comparisons_valid": true,
+    "mechanical_comparison_receipt": "reports/corpus-generation-mechanical-comparisons-20261124.json",
+    "trusted_comparison_receipt": "reports/corpus-generation-trusted-comparisons-20261125.json"
+  },
+  "grading_blocker": {
+    "provider": "OpenAI",
+    "model": "gpt-4.1",
+    "error": "credit_balance_exhausted",
+    "fresh_probe_receipt": "reports/openai-judge-credit-check-20261125-060740.json",
+    "remedy": "Replenish configured OpenAI API credits, then regrade these saved runs; no repeated Anthropic answers or embeddings are needed.",
+    "next_run_tracing": "Use INTEGRITY_MODELS__TRACING=off to avoid LangSmith monthly trace-quota failures. Grader settings remain unchanged.",
+    "resolved_probe_receipt": "reports/openai-judge-credit-check-20261125-185205.json",
+    "current_status": "Resolved for all four completed regrades; later application credit exhaustion is tracked separately."
+  },
+  "r7_preview": {
+    "receipt": "reports/r7-preview-20261124.json",
+    "cards_validated": 62,
+    "publication_performed": false
+  },
+  "judge_credit_guard": {
+    "implemented": true,
+    "behavior": "After one explicit provider-credit error, stop application retries and all subsequent requests through that model-client instance. Other rate limits and connection errors keep normal retries. Successful grading is unchanged.",
+    "focused_checks": "82 passed",
+    "grader_version": "g-eaa3d7",
+    "full_suite": "637 passed in 60.86s"
+  },
+  "grading_resume": {
+    "date_local": "2026-11-25",
+    "credit_probe_receipt": "reports/openai-judge-credit-check-20261125-185205.json",
+    "source_runs": {
+      "G1": "r-20261125-025823",
+      "G2": "r-20261125-025955",
+      "G3": "r-20261125-030003",
+      "G4_review_corrections": "r-20261125-030012"
+    },
+    "grader": "g-eaa3d7",
+    "tracing": "off for these grading processes",
+    "new_answer_calls": 0,
+    "runs": {
+      "G1": {
+        "run_id": "r-20261125-185253",
+        "source_run": "r-20261125-025823",
+        "data_root": "integrity_data",
+        "status": "complete",
+        "trust": "TRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-185253"
+      },
+      "G2": {
+        "run_id": "r-20261125-185300",
+        "source_run": "r-20261125-025955",
+        "data_root": "reports/corpus-measurements-20261124/G2",
+        "status": "complete",
+        "trust": "TRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-185300"
+      },
+      "G3": {
+        "run_id": "r-20261125-185309",
+        "source_run": "r-20261125-030003",
+        "data_root": "reports/corpus-measurements-20261124/G3",
+        "status": "complete",
+        "trust": "TRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-185309"
+      },
+      "G4_review_corrections": {
+        "run_id": "r-20261125-185316",
+        "source_run": "r-20261125-030012",
+        "data_root": "reports/corpus-measurements-20261124/G4",
+        "status": "complete",
+        "trust": "TRUSTED",
+        "canonical_run_dir": "integrity_data/runs/r-20261125-185316"
+      }
+    },
+    "last_progress": {
+      "checked_at": "2026-11-25T19:17:52.238553+00:00",
+      "graded_cards": {
+        "G1": 62,
+        "G2": 62,
+        "G3": 62,
+        "G4_review_corrections": 62
+      },
+      "cards_per_generation": 62,
+      "phase": "all grading completed and trusted",
+      "final_control_checks_pending": false
+    },
+    "execution_sessions": {
+      "G1": 62758,
+      "G2": 70126,
+      "G3": 54152,
+      "G4_review_corrections": 29139
+    },
+    "status": "complete"
+  },
+  "activation_strategy": {
+    "target": "G4_review_corrections",
+    "target_namespace": "epub-v1-493ca312bc082c7e",
+    "include_R1": true,
+    "branch": "main",
+    "execution_note": "All four generations were separately measured before changing the active namespace. Activate the final corrected corpus with R1 in one commit; retain all intermediate namespaces and evidence.",
+    "prepared_patch": "reports/final-G4-R1-activation-20261125.patch",
+    "candidate_graph_sha256": "d37b49e8814ab1d2c1583ec689d75247bb14f46bd2e06bda8c4f6d5953b2ee57",
+    "before_config_sha256": "429b949c7ecb635560f0ae7f55c7318d35e21cc306539d75531fe99b56a6be1b",
+    "before_graph_sha256": "fe05d80e846e78f018b7021295c67db9e92337247c6406789c22a5ec8964e8b6"
+  },
+  "activation_blocker": {
+    "provider": "OpenAI",
+    "model": "gpt-5.4-mini",
+    "http_status": 429,
+    "code": "credit_balance_exhausted",
+    "stage": "staging candidate classify",
+    "receipt": "reports/activation-candidate-smoke-20261125.json",
+    "sdk_and_app_same_key": true,
+    "sdk_and_app_same_organization": true,
+    "sdk_and_app_same_project": true,
+    "endpoint_host": "api.openai.com",
+    "completed_smoke_cases": 0
+  }
 }

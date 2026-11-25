@@ -31,6 +31,8 @@ def test_upload_embeds_prefix_but_stores_original(monkeypatch,tmp_path,require_e
             captured['vectors']=vectors
             return SimpleNamespace(upserted_count=len(vectors))
     monkeypatch.setattr(ingest,'remote_index',lambda:Index())
+    monkeypatch.setattr(ingest,'DEFAULT_NAMESPACE','protected-default')
+    monkeypatch.setattr(ingest,'ACTIVE_NAMESPACE','protected-active')
     monkeypatch.setattr(langchain_openai,'OpenAIEmbeddings',Embeddings)
     ingest.upload_records([d],[d.metadata['passage_id']],report,report['corpus_version'],progress_path=tmp_path/'progress.json')
     assert captured['embedded']==[embedding_text(d)]

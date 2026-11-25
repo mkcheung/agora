@@ -1,0 +1,75 @@
+{
+  "run_id": "r-20261125-025823",
+  "started_at": "2026-11-25T02:58:23Z",
+  "finished_at": "2026-11-25T04:11:33Z",
+  "sheet_version": "v002",
+  "sheet_content_sha256": "b788cd994d35a05dd3b1936aa58a997c81d50cbad9a875b9ca07a410abf4bd47",
+  "grader_version": "g-eaa3d7",
+  "judge_model": "openai:gpt-4.1",
+  "prompt_hashes": {
+    "judge_coverage_v1": "ae2b9f04ba4e10f74df47a1f726e2ef8266b8c1a64f820bfb895ba4fe8f3d685",
+    "judge_claims_v1": "a41de9629a2208996fb6c7b8ec13553e4ff33859f5c9740fc3e80ad01a6dc01f",
+    "judge_support_v1": "4a2ba6835148f8aae67d014ee8b4e9226a7da40a501946863f8ba70e70f04238",
+    "judge_refusal_v1": "95876c9b90a0c2d6aa358c71999df0170d46a5c130bc5e95077da204743b0f35",
+    "judge_premise_v1": "b88d9167c7c14f74dcf3e316408290ee54a3d85813918bdbb5911af10351c0bf"
+  },
+  "entrypoint": "ask:answer_question",
+  "namespace": "epub-v1-072397d01f31c73d",
+  "agora_info": {
+    "model": "anthropic:claude-sonnet-5-5",
+    "namespace": "epub-v1-072397d01f31c73d",
+    "k": 8,
+    "filters": null,
+    "code_sha256": "b4677186e6c325cb076bfe11f535f94f98ede84a9872ba783ecf0a900e5384fe"
+  },
+  "git_commit": "d7f1f0e77d3002eaf4ab02315aeabef1880dfb6a",
+  "git_dirty": true,
+  "module_version": "0.1.0",
+  "textnorm_version": 1,
+  "options": {
+    "sheet": "v002",
+    "limit": null,
+    "authors": null,
+    "cards": null,
+    "agora": null,
+    "namespace": "epub-v1-072397d01f31c73d",
+    "mechanical_only": false,
+    "resume": null,
+    "strict": false
+  },
+  "preflight": {
+    "checks": {
+      "P1": {
+        "ok": true,
+        "detail": "v002"
+      },
+      "P2": {
+        "ok": true,
+        "detail": "62 cards to run, 58 scorable non-holdout"
+      },
+      "P3": {
+        "ok": true,
+        "detail": "ask:answer_question"
+      },
+      "P4": {
+        "ok": true,
+        "detail": "openai:gpt-4.1"
+      },
+      "P5": {
+        "ok": true,
+        "detail": ""
+      },
+      "P6": {
+        "ok": true,
+        "detail": "/Users/marscheung/SideProjects/agora/integrity_data/runs"
+      },
+      "P7": {
+        "ok": true,
+        "detail": "d7f1f0e77d3002eaf4ab02315aeabef1880dfb6a dirty=True"
+      }
+    },
+    "warnings": []
+  },
+  "status": "complete",
+  "timeouts": []
+}

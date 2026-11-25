@@ -1,8 +1,8 @@
 # Corpus Upgrade Plan
 
-**Execution status (2026-11-24): implementation and offline validation complete; live execution is blocked by exhausted OpenAI credits.** G1 was uploaded and verified, its v001 comparison completed, and v002 was published with 30 approved new cards. The v002 baseline was interrupted by `credit_balance_exhausted` and is not valid baseline evidence. G2 and G3 have separate reproducible commits; explorer review identified two source defects, corrected in an additional isolated G4 generation. The original active namespace and `philosophy_query.py` remain unchanged until the live measurement/activation gates pass. R1 is authorized by the execution request and reserved for that activation commit; optional O1–O7 remain deferred. See `CORPUS_UPGRADE_STATE.json` for exact checkpoints and remaining work.
+**Execution status (2026-11-25): all four generation measurements are complete and TRUSTED; application smoke tests are blocked by a new OpenAI credit exhaustion.** All 96 required control checks passed, with zero judge errors and 98.3-99.4% repeat agreement. G4 retains 48/49 retrieval hits versus G1's 45/49. The G3-to-G4 completeness decrease is documented with exact context hashes: all six loss cases received the same passages, five with byte-identical initial context. The original active namespace and query graph remain unchanged. Restore OpenAI credits for the pending G4/R1 smoke tests and later v003 baseline; do not repeat the completed regrades. See `CORPUS_UPGRADE_STATE.json` and `reports/corpus-generation-trusted-comparisons-20261125.json`.
 
-**Edition scope agreed during execution:** use the suggested models with a $10 cumulative cap and stop with a resumable partial edition. The 92-block pilot is saved and backed up; flagged renderings are drafts, not a released edition.
+**Edition scope agreed during execution:** use the suggested models with a $10 cumulative cap and stop with a resumable partial edition. The 92-block pilot is saved; all required bound judge receipts are now present, cumulative booked spend is $1.600150, and 48 renderings still require review. Flagged renderings remain unreleased drafts. The current source/render/judge review packet is `reports/edition-review-current-20261125.json`.
 
 **Goals**
 1. Let `philosophy_query.py` answer questions about each author's ideas from that author's own works: 12 Gutenberg books by 8 authors. Sam Harris is deferred.
@@ -577,7 +577,7 @@ None of these affects the quiz, which calls `ask.answer_question` and never the 
 - [x] v001 crowding compared against `r-20261121-172125`.
 - [x] v002 published once, with "added" equal to the number of approved cards.
 - [x] `sheet check` after publishing: every card ok.
-- [ ] v002 baseline recorded.
+- [x] v002 baseline recorded.
 - [ ] Merged to `main`.
 - [ ] Activation check run.
 - [ ] Activation commit made (config, plus R1 if authorized).
@@ -586,13 +586,13 @@ None of these affects the quiz, which calls `ask.answer_question` and never the 
 **G2**
 - [x] Only the intended differences appear.
 - [x] B2's stratum change is in the same commit.
-- [ ] Compared on v002.
+- [x] Compared on v002.
 - [x] Golden file regenerated.
 - [ ] Activated.
 
 **G3**
-- [ ] Embedded-text hash verified.
-- [ ] Compared on v002.
+- [x] Embedded-text hash verified.
+- [x] Compared on v002.
 - [ ] Activated.
 - [ ] R7 refresh done.
 - [ ] v003 baseline recorded.
@@ -993,3 +993,28 @@ The prototypes are evidence, not code to copy. They were built separately and ar
 - The partial edition remains unreleased because content flags and judge disagreements require resolution. The retained $10 cap also prevents treating a partial edition as a full-build acceptance.
 - Do not resume the interrupted v002 run as a clean baseline: it contains saved quota-error records that normal resume skips. Start a fresh explicit v002/G1 run once credits are restored, retaining the interrupted receipt.
 - No namespaces were deleted. The original live namespace is unchanged. Additional superseded G1 staging evidence is retained for audit; cleanup requires the exact-target safeguards and a later successful activation/baseline.
+- Resume attempt `r-20261125-022259` (2026-11-24 local time) reached the configured Anthropic answer model for 42 cards, then saved 20 HTTP 400 insufficient-credit errors. Grading was explicitly interrupted after 25 cards to avoid further charges on an unusable baseline; there is no completed scorecard. Restore **Anthropic** credits and start a fresh G1/v002 run, retaining both interrupted receipts. A normal `--resume` would skip the saved error rows.
+- G2 and G3 staging proceeded independently of activation, in isolated worktrees with all 12 EPUB hashes verified and preparation reports equal to their frozen receipts. Both full uploads passed record-by-record text/metadata verification and retrieval checks for all 14 works. Their measurement comparisons and activations remain gated by a valid G1/v002 baseline.
+- The saved edition pilot's 69 missing current judge receipts were completed under the existing cumulative cap. The resulting check has 92 valid renderings, zero missing judge receipts, 58 unresolved review cases, and `release_ready: false`. No disagreement has been accepted as human-reviewed.
+
+- Corrected G4 completed its upload and exact verification of 8,936 records and retrieval checks for all 14 works. All four generations are now staged; none was newly activated during this resume. The active namespace remains `epub-v1-04b8672ea20df6c7`.
+- Following a user-reported Anthropic top-up, attempt `r-20261125-024904` still received insufficient-credit errors and was interrupted before grading (zero successful answers, 56 saved error rows). A separate minimal request confirmed the same HTTP 400 response. The effective key comes from the project's `.env`, with no ambient key override, and requests use `api.anthropic.com`. Confirm that the funded Console organization owns this key before another paid baseline attempt. Diagnostic receipt: `reports/anthropic-credit-recheck-20261125-025058.json`.
+- The quiz runner now aborts immediately on explicit provider credit exhaustion, retaining completed answers and the failed-call receipt without retrying, asking later cards, or grading. Resuming a saved credit-error row also aborts with instructions to start fresh; temporary rate limits still retry. No answer, retrieval, judge prompt, sheet, corpus fingerprint, or grader version was changed (`g-eaa3d7`). Validation: 35 focused tests, 633 full-suite tests, changed-file Ruff, and `git diff --check` passed.
+
+- The user confirmed the funded Console organization owns the configured API key and shows a positive balance. A further minimal request at `2026-11-25T02:55:06Z` still failed with HTTP 400 insufficient credit (request `req_011ChNtiy9dCxVaPDtgpxUWH`). No key override or alternate endpoint was found. Resolve this provider billing/access rejection before another baseline attempt; first require a successful minimal probe. A secret-free support packet is saved at `reports/anthropic-credit-support-20261124.json`.
+
+- Fresh v002 runs completed the answer stage: G1 `r-20261125-025823`, G2 `r-20261125-025955`, G3 `r-20261125-030003`, G4 `r-20261125-030012`. All 248 raw answers have no answer-call errors. All four scorecards are UNTRUSTED because the configured OpenAI judge exhausted credits; do not treat their judged comparisons as acceptance evidence. Canonical copies of all runs and their raw files are retained in `integrity_data/runs/`; the independent data roots are also preserved. Restore OpenAI credits and use `integrity regrade <source run>` to obtain fresh trusted scorecards without rerunning Anthropic. Set `INTEGRITY_MODELS__TRACING=off` for those runs because LangSmith also reached its monthly trace quota.
+- R7 preview validated all 62 cards against final G4 without publishing. Seven edition code-flag false positives were resolved by explicit source/rendering Codex review after independent faithful judgments; 51 cases remain unresolved, no paid calls were added, and the edition remains partial and unreleased.
+- An activation rehearsal exposed one fake-upload test that relied on the prepared namespace being inactive. The test now supplies explicit protected namespace names, preserving the production upload guard after G4 activation. The focused activation-environment checks passed (18 tests).
+
+- The configured OpenAI `gpt-4.1` judge was rechecked directly at `2026-11-25T06:07:38Z`; it still returned HTTP 429 `insufficient_quota` / `credit_balance_exhausted` (`reports/openai-judge-credit-check-20261125-060740.json`). The model client now remembers explicit credit failure for its lifetime, skips application retries, and makes no later model requests; ordinary temporary rate limits retain retries. This changes failure handling only; grader `g-eaa3d7` is unchanged.
+- Pytest discovery is now restricted to `tests` and `integrity/tests`, so recoverable copies of tests inside backups are preserved without being collected as duplicate test modules.
+
+- On 2026-11-25, a minimal OpenAI `gpt-4.1` check succeeded and grading resumed from all four saved source runs, with `INTEGRITY_MODELS__TRACING=off`. All source raw-file hashes were verified before regrading. The prior untrusted runs remain preserved; no Anthropic answers are repeated.
+- Fresh cloud checks reconfirmed all staged namespace counts and exact G4 round trips for 8,936 records, plus retrieval checks for 14 works (`reports/pre-activation-staging-verification-20261125.json`).
+- Four edition drafts received source-bound wording corrections. Three now pass fresh independent judgments; the Smith paragraph remains flagged after three refinement rounds and is retained for review. The cumulative ledger is $1.600150, with 48 unresolved records and no release. Exact revision receipts and the current review packet are saved in `reports/`.
+
+- All four regrades completed with TRUSTED health: G1 `r-20261125-185253`, G2 `r-20261125-185300`, G3 `r-20261125-185309`, G4 `r-20261125-185316`. Each passed 24/24 required controls and had zero judge-call errors. Raw answers remain byte-identical to their saved source runs. All receipts are now also in canonical `integrity_data/runs/` directories.
+- Trusted main metrics (Found; Complete; Faithful; fully passing) are G1: 45/49; 104/116; 590/616; 16/58. G2: 45/49; 105/116; 599/627; 14/58. G3: 48/49; 112/116; 632/653; 18/58. G4: 48/49; 105.5/116; 603/631; 15/58. G4's lower answer-level scores relative to G3 are retained and investigated, not hidden: all six completeness-loss cases received the same passage set, five with identical assembled initial context; the remaining case changed passage order. The report's noise bands do not model answer-generation variance. Full comparisons, context hashes, failures, and separate holdout results are preserved.
+- Execution-order amendment: all four generations were measured while the original corpus remained active. The prepared deployment is one final corrected G4 + R1 activation commit on `main`, with all intermediate namespaces and measurements retained. The exact two-file patch is `reports/final-G4-R1-activation-20261125.patch`. No application source has been changed yet.
+- The first staging graph smoke case failed at `classify` with OpenAI HTTP 429 `credit_balance_exhausted`, after all regrades had completed. The SDK and application use the same key, organization, project, and official endpoint. Zero smoke cases completed, so activation remains pending. Restore OpenAI credits for smoke tests and the final v003 baseline; the trusted regrades do not need repeating.

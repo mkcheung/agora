@@ -24,7 +24,7 @@ class ModelOutputError(Exception):
 
 
 class ModelCallError(Exception):
-    """Transport/API failure that persisted after retries."""
+    """Transport/API failure, including exhausted provider credits."""
 
 
 class ModelAuthError(ModelCallError):
@@ -128,6 +128,7 @@ class LangChainModelClient:
         self.max_retries = max_retries
         self.backoff_s = backoff_s
         self._sleep = sleep
+        self._credit_failure: str | None = None
         self.usage: list[dict[str, Any]] = []
         kwargs: dict[str, Any] = {}
         if temperature is not None and not rejects_temperature(model_id):
@@ -173,6 +174,8 @@ class LangChainModelClient:
             raise ModelOutputError(f"{purpose}: output failed schema validation: {e}") from e
 
     def structured(self, *, system: str, user: str, schema: type[BaseModel], purpose: str) -> BaseModel:
+        if getattr(self, "_credit_failure", None):
+            raise ModelCallError(f"{purpose}: provider credits exhausted; further calls stopped: {self._credit_failure}")
         runnable = self._runnable(schema)
         messages = [("system", system), ("user", user)]
         parse_failures = 0
@@ -185,6 +188,10 @@ class LangChainModelClient:
                 if parse_failures > 1:  # one retry, then raise
                     raise
             except Exception as e:
+                if any(marker in str(e).lower() for marker in
+                       ("insufficient_quota", "credit_balance_exhausted", "credit balance is too low")):
+                    self._credit_failure = str(e)
+                    raise ModelCallError(f"{purpose}: provider credits exhausted; further calls stopped: {e}") from e
                 if is_auth_error(e):
                     raise ModelAuthError(f"{purpose}: the provider rejected the API key: {e}") from e
                 if getattr(self, "_temperature_sent", False) and is_temperature_error(e):

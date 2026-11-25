@@ -37,3 +37,6 @@ dev = [
     "ruff>=0.17.0",
     "streamlit>=1.65.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "integrity/tests"]

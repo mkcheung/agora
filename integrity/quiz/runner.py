@@ -14,6 +14,17 @@ from integrity.common.schema import Card
 from integrity.quiz.agora import ContractViolation
 
 EXIT_AGORA, EXIT_RUN_FAILED = 3, 5
+CREDIT_MESSAGE = (
+    "integrity quiz: provider credits are exhausted; stopped without further answer or grading calls.\n"
+    "Saved answers and the credit-error receipt are preserved in raw.jsonl. "
+    "Restore credits and start a fresh run; --resume cannot produce a clean baseline from saved credit errors.\n"
+)
+
+
+def _credit_error(error: dict[str, str] | None) -> bool:
+    message = (error or {}).get("message", "").lower()
+    return any(marker in message for marker in
+               ("insufficient_quota", "credit_balance_exhausted", "credit balance is too low"))
 
 
 class CallTimeout(Exception):
@@ -82,6 +93,9 @@ def run_cards(
         if card.card_id in done:
             rec = done[card.card_id]
             out.records.append(rec)
+            if _credit_error(rec.get("error")):
+                out.aborted = (EXIT_RUN_FAILED, CREDIT_MESSAGE)
+                return out
             if out.first_info is None and rec.get("result"):
                 out.first_info = rec["result"].get("info")
             continue
@@ -110,6 +124,9 @@ def run_cards(
                 return out
             except (Exception, SystemExit) as e:  # noqa: BLE001  (Agora calling sys.exit() is an error for this card)
                 error = {"type": type(e).__name__, "message": str(e)[:2000]}
+                if _credit_error(error):
+                    out.aborted = (EXIT_RUN_FAILED, CREDIT_MESSAGE)
+                    break
         rec = {
             "card_id": card.card_id, "question": card.question, "started_at": started,
             "latency_s": round(time.monotonic() - t0, 3), "attempts": attempts,
@@ -119,6 +136,8 @@ def run_cards(
         out.records.append(rec)
         emit({"event": "card_finished", "card_id": card.card_id, "index": i, "total": total,
               "ok": error is None, "latency_s": rec["latency_s"]})
+        if out.aborted:
+            return out
         if result is not None:
             contract_ok = True
             if out.first_info is None:

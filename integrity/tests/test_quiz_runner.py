@@ -97,6 +97,56 @@ def test_resume_skips_finished_cards(env, tmp_path):
     assert out.first_info["model"] == "anthropic:claude-sonnet-5-5"
 
 
+@pytest.mark.parametrize("message", [
+    "Error code: 400 - Your credit balance is too low to access the Anthropic API.",
+    "Error code: 429 - insufficient_quota",
+    "Error code: 403 - credit_balance_exhausted",
+])
+def test_credit_failure_preserves_answers_and_stops_without_retry(env, tmp_path, message):
+    calls = []
+    good = adapter("good_agora")
+
+    def ask(question):
+        calls.append(question)
+        if len(calls) == 2:
+            raise RuntimeError(message)
+        return good(question)
+
+    out = runner.run_cards(cards(env), ask, tmp_path, timeout_s=5, retries=3)
+    saved = storage.read_jsonl(tmp_path / "raw.jsonl")
+    assert calls == [c.question for c in cards(env)[:2]]
+    assert out.aborted and out.aborted[0] == 5
+    assert len(saved) == 2 and saved[0]["result"] and saved[0]["error"] is None
+    assert saved[1]["error"]["message"] == message and saved[1]["attempts"] == 1
+
+
+def test_credit_error_in_saved_run_blocks_resume_before_more_calls(env, tmp_path):
+    def empty_balance(question):
+        raise RuntimeError("Your credit balance is too low to access the Anthropic API.")
+
+    runner.run_cards(cards(env), empty_balance, tmp_path, timeout_s=5, retries=0)
+    before = (tmp_path / "raw.jsonl").read_bytes()
+    fa.CALLS.clear()
+    out = runner.run_cards(cards(env), adapter("good_agora"), tmp_path, timeout_s=5, retries=0)
+    assert out.aborted and out.aborted[0] == 5 and "fresh run" in out.aborted[1]
+    assert not fa.CALLS and (tmp_path / "raw.jsonl").read_bytes() == before
+
+
+def test_temporary_rate_limit_still_retries_and_continues(env, tmp_path):
+    calls = []
+    good = adapter("good_agora")
+
+    def ask(question):
+        calls.append(question)
+        if len(calls) == 1:
+            raise RuntimeError("Error code: 429 - rate_limit_exceeded: requests per minute")
+        return good(question)
+
+    out = runner.run_cards(cards(env), ask, tmp_path, timeout_s=5, retries=1)
+    assert out.aborted is None and len(out.records) == 5 and len(calls) == 6
+    assert out.records[0]["attempts"] == 2 and all(r["error"] is None for r in out.records)
+
+
 # --------------------------------------------------------------------------- through the API
 
 
@@ -104,6 +154,20 @@ def test_all_cards_errored_exits_5(env):
     r = api.run_quiz(agora=SPEC + "raising_agora", settings=qf.settings_for(), mechanical_only=True)
     assert r.exit_code == 5 and r.scorecard is None
     assert (r.run_dir / "raw.jsonl").exists()
+
+
+def test_credit_failure_aborts_api_without_grading(env, monkeypatch):
+    def empty_balance(question):
+        raise RuntimeError("Your credit balance is too low to access the Anthropic API.")
+
+    monkeypatch.setattr(fa, "good_agora", empty_balance)
+    monkeypatch.setattr(api, "_grade_and_write", lambda **kw: pytest.fail("graded a credit-failed run"))
+    r = api.run_quiz(agora=SPEC + "good_agora", settings=qf.settings_for(retries=3), model_client=qf.RuleJudge())
+    assert r.exit_code == 5 and r.scorecard is None
+    saved = storage.read_jsonl(r.run_dir / "raw.jsonl")
+    assert len(saved) == 1 and saved[0]["attempts"] == 1
+    assert storage.read_json(r.run_dir / "run.json")["status"] == "aborted"
+    assert not (r.run_dir / "scorecard.json").exists()
 
 
 def test_first_card_contract_violation_exits_3(env):
