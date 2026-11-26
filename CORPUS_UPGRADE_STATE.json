@@ -112,7 +112,7 @@
   },
   "remaining": [
     "Upload/app-switch phase is complete on main. Restart any already-running application process to load the new default; no service restart or remote push was performed.",
-    "Cosmetic display issue: modernization echoed <responseAnswer> wrapper tags in the Kant smoke. Recorded but not fixed; other author/routes were not live-tested.",
+    "Application follow-up: one combined five-work question retrieved all five works but answered the requested topics incompletely. Broad author-filtered retrieval and the three-passages-total threshold do not ensure per-topic/work coverage. One standalone Kant question previously passed. Cosmetic display wrapper tags also remain recorded. No app code changed during the combined test.",
     "R7 publication/v003 baseline is deferred. No further paid integrity grading without new explicit authorization; do not repeat the four trusted v002 regrades.",
     "Separate modern-English edition remains partial and unreleased: 48 review cases, existing $10 cumulative edition cap.",
     "Retain old/superseded namespaces; exact deletion approval is still required."
@@ -172,6 +172,21 @@
       },
       "embedding_usage": "Not captured",
       "display_note": "Modernization returned a readable answer but echoed the <responseAnswer> wrapper tags. Cosmetic issue observed; not fixed and no extra model call made."
+    },
+    "five_work_application_smoke": {
+      "receipt": "reports/five-work-application-smoke-20261125-223620.json",
+      "passed": false,
+      "all_five_works_retrieved": true,
+      "all_five_works_cited": false,
+      "all_requested_topics_answered": false,
+      "verified_citations": 7,
+      "recorded_chat_calls": 35,
+      "chat_token_totals": {
+        "input_tokens": 24067,
+        "output_tokens": 5936,
+        "total_tokens": 30003
+      },
+      "diagnosis": "Observed in code and this receipt: the same entire multi-topic question goes to each author-filtered search (eight results per author), including a shared eight-result allowance across both Kant books. Generation starts once there are at least three relevant passages overall; there is no requirement for evidence covering each requested topic or work. The Groundwork hit mentions division of labour, demonstrating a cross-topic match in the broad query."
     }
   },
   "latest_backup": "backups/corpus-upgrade-trusted-measurements-20261125-113656",
@@ -442,7 +457,7 @@
   "paid_api_policy": {
     "integrity_grading": "Stopped at user request; no further paid integrity evaluations without new explicit authorization.",
     "this_change": "No API requests; existing verified Pinecone collection reused.",
-    "latest_authorization": "User authorized one Kant application smoke test; completed. No further paid calls are authorized by this test."
+    "latest_authorization": "User authorized one combined question covering the five new works. Completed once; no further paid calls under this authorization."
   },
   "pre_activation_smoke_failure": {
     "provider": "OpenAI",
