@@ -160,6 +160,65 @@ def test_numbered_sections_refuse_to_mix_chapters_after_a_restart():
     assert ids(select_numbered_sections(docs, 2)) == ["b"]
 
 
+def test_restart_to_the_same_number_in_a_new_chapter_is_caught():
+    docs = [doc("a", section=1, chapter=1), doc("b", section=1, chapter=2)]
+    with pytest.raises(ValueError, match="restart"):
+        select_numbered_sections(docs, 1)
+
+
+def test_backwards_numbered_range_raises():
+    with pytest.raises(ValueError, match="backwards"):
+        select_numbered_sections([doc("a", section=3)], 5, 3)
+
+
+# --- list_sections without EPUBs ---
+
+def test_sections_split_on_chapter_and_keep_labels_unique():
+    docs = [
+        doc("p", heading="PREFACE"),
+        doc("c1", book="Book I", chapter=1, chapter_title="ONE"),
+        doc("n", note_of="c1", book="Book I", chapter=1),
+        doc("c2", book="Book I", chapter=2),
+        doc("ap", book="Book I", heading="Appendix"),
+        doc("i", book="Book II"),
+        doc("i2", book="Book II"),
+    ]
+    sections = list_sections(docs)
+    assert [(s.label, s.start, s.end, s.unnumbered) for s in sections] == [
+        ("PREFACE", 0, 1, True),
+        ("Book I, Chapter 1: ONE", 1, 3, False),
+        ("Book I, Chapter 2", 3, 4, False),
+        ("Book I", 4, 5, False),
+        ("Book II", 5, 7, False),
+    ]
+    assert ids(select_sections(docs, sections, ["s2"])) == ["c1", "n"]
+
+
+def test_repeated_label_takes_its_heading():
+    docs = [doc("a", book="Book IV"), doc("b", book="Book IV", chapter=1), doc("c", book="Book IV", heading="Appendix")]
+    assert [s.label for s in list_sections(docs)] == ["Book IV", "Book IV, Chapter 1", "Book IV: Appendix"]
+
+
+def test_leading_note_joins_first_section_named_after_its_paragraph():
+    docs = [doc("n", note_of="gone", chapter=9), doc("a", chapter=1), doc("b", chapter=2)]
+    sections = list_sections(docs)
+    assert (sections[0].start, sections[0].label) == (0, "Chapter 1")
+
+
+def test_unstructured_work_is_cut_into_paragraph_ranges(monkeypatch):
+    monkeypatch.setattr("reader.PARAGRAPHS_PER_RANGE", 2)
+    docs = [doc("a", paragraph=1), doc("n", note_of="a"), doc("b", paragraph=2), doc("c", paragraph=3)]
+    sections = list_sections(docs)
+    assert [(s.label, s.start, s.end) for s in sections] == [("Paragraphs 1–2", 0, 3), ("Paragraphs 3–3", 3, 4)]
+
+
+def test_load_work_rejects_unknown_title(monkeypatch):
+    monkeypatch.setattr("reader.prep_cache_for_translation", lambda: {"Leviathan": (doc("a"),)})
+    assert ids(load_work("Leviathan")) == ["a"]
+    with pytest.raises(LookupError, match="Leviathan"):
+        load_work("Leviathan II")
+
+
 def test_section_labels_are_unique(require_epubs):
     for title in prep_cache_for_translation():
         labels = [s.label for s in sections_of(title)[1]]

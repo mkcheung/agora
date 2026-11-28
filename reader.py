@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import cache
+from types import MappingProxyType
 
 from langchain_core.documents import Document
 
@@ -10,21 +11,25 @@ from parsers import parse_epub
 
 @cache
 def prep_cache_for_translation():
+    """Every work's paragraphs by title, parsed once per process.
+
+    The mapping and its tuples are read-only so no caller can change the cached
+    corpus; the Documents themselves are shared, so do not edit them in place.
+    """
     corpus = defaultdict(list)
     for source in WORKS:
         paragraphs = parse_epub(ROOT / source["file"], source["profile"])
 
         for paragraph in paragraphs:
             corpus[paragraph.metadata['work']].append(paragraph)
-    
-    return dict(corpus)
+
+    return MappingProxyType({title: tuple(docs) for title, docs in corpus.items()})
 
 def load_work(title:str):
     corpus = prep_cache_for_translation()
-    try:
-        return list(corpus[title])
-    except LookupError:
-        raise LookupError(f"{title!r} is not a part of this corpus. Choose one of {sorted(corpus)}") from None
+    if title not in corpus:
+        raise LookupError(f"{title!r} is not a part of this corpus. Choose one of {sorted(corpus)}")
+    return list(corpus[title])
 
 
 # Default sizes for a translation request, in characters of source text.
@@ -34,7 +39,8 @@ PARAGRAPHS_PER_RANGE = 40       # section size for works with no chapters (Burke
 
 # Metadata fields that mark a chapter-level division. Finer levels (§ numbers,
 # subheadings inside a chapter) are deliberately left out so a chapter stays one section.
-STRUCTURAL_FIELDS = ("division", "part", "book", "chapter")
+# Same order as the parser's locators ("Book II, Part I"), so labels read alike.
+STRUCTURAL_FIELDS = ("division", "book", "part", "chapter")
 
 
 def is_note(doc: Document) -> bool:
@@ -128,7 +134,8 @@ def list_sections(paragraphs: list[Document]) -> list[Section]:
     sections, used_labels = [], set()
     for number, (start, end) in enumerate(zip(starts, starts[1:] + [len(paragraphs)]), 1):
         span = paragraphs[start:end]
-        first = span[0].metadata
+        # starts[0] may be a leading note; name the section after its first paragraph.
+        first = next((doc.metadata for doc in span if not is_note(doc)), span[0].metadata)
         if structured:
             label = _section_label(first)
             unnumbered = not any(field in first for field in STRUCTURAL_FIELDS)
@@ -142,8 +149,7 @@ def list_sections(paragraphs: list[Document]) -> list[Section]:
         if label in used_labels:
             label = f"{label} ({number})"
         used_labels.add(label)
-        chars = sum(len(doc.page_content) for doc in span)
-        sections.append(Section(f"s{number}", label, start, end, chars, unnumbered))
+        sections.append(Section(f"s{number}", label, start, end, _chars(span), unnumbered))
     return sections
 
 
@@ -166,9 +172,11 @@ def select_numbered_sections(paragraphs: list[Document], first: int, last: int |
     on both sides of a restart raises ValueError rather than mixing chapters.
     """
     last = first if last is None else last
+    if last < first:
+        raise ValueError(f"Range §{first}–§{last} runs backwards")
     wanted = f"§{first}" + (f"–§{last}" if last != first else "")
     kept, kept_ids, runs = [], set(), set()
-    run, previous = 0, None
+    run, previous, previous_key = 0, None, None
     for doc in paragraphs:
         if is_note(doc):
             keep = doc.metadata["reference_block_id"] in kept_ids
@@ -176,9 +184,12 @@ def select_numbered_sections(paragraphs: list[Document], first: int, last: int |
             number = doc.metadata.get("section")
             keep = isinstance(number, int) and first <= number <= last
             if isinstance(number, int):
-                if previous is not None and number < previous:
-                    run += 1  # numbering restarted
-                previous = number
+                key = _section_key(doc.metadata)
+                # A drop in number is a restart; so is the same number in a new chapter
+                # (a chapter with only §1 followed by another starting at §1).
+                if previous is not None and (number < previous or number == previous and key != previous_key):
+                    run += 1
+                previous, previous_key = number, key
             if keep:
                 runs.add(run)
         if keep:
@@ -203,8 +214,25 @@ def _units(paragraphs: list[Document]) -> list[list[Document]]:
     return units
 
 
-def _unit_chars(unit: list[Document]) -> int:
-    return sum(len(doc.page_content) for doc in unit)
+def _chars(docs: list[Document]) -> int:
+    return sum(len(doc.page_content) for doc in docs)
+
+
+def _pack(paragraphs: list[Document], max_chars: int):
+    """Yield whole paragraphs (with notes) in groups of at most max_chars, lazily.
+
+    A paragraph longer than max_chars gets a group to itself.
+    """
+    current, total = [], 0
+    for unit in _units(paragraphs):
+        size = _chars(unit)
+        if current and total + size > max_chars:
+            yield current
+            current, total = [], 0
+        current.extend(unit)
+        total += size
+    if current:
+        yield current
 
 
 def cap_selection(paragraphs: list[Document], max_chars: int = MAX_TRANSLATION_CHARS) -> tuple[list[Document], str | None]:
@@ -214,14 +242,9 @@ def cap_selection(paragraphs: list[Document], max_chars: int = MAX_TRANSLATION_C
     None if everything fit. The first paragraph is always kept, even if it alone
     is longer than max_chars.
     """
-    kept, total = [], 0
-    for unit in _units(paragraphs):
-        size = _unit_chars(unit)
-        if kept and total + size > max_chars:
-            return kept, unit[0].metadata["locator"]
-        kept.extend(unit)
-        total += size
-    return kept, None
+    groups = _pack(paragraphs, max_chars)
+    kept, rest = next(groups, []), next(groups, None)
+    return kept, rest[0].metadata["locator"] if rest else None
 
 
 def batch_paragraphs(paragraphs: list[Document], max_chars: int = BATCH_CHARS) -> list[list[Document]]:
@@ -229,14 +252,4 @@ def batch_paragraphs(paragraphs: list[Document], max_chars: int = BATCH_CHARS) -
 
     A paragraph longer than max_chars gets a batch to itself.
     """
-    batches, current, total = [], [], 0
-    for unit in _units(paragraphs):
-        size = _unit_chars(unit)
-        if current and total + size > max_chars:
-            batches.append(current)
-            current, total = [], 0
-        current.extend(unit)
-        total += size
-    if current:
-        batches.append(current)
-    return batches
+    return list(_pack(paragraphs, max_chars))
