@@ -151,3 +151,16 @@ def test_batches_never_split_a_paragraph_from_its_notes():
     batches = batch_paragraphs(docs, max_chars=100)
     assert [ids(b) for b in batches] == [["a", "n"], ["b"], ["c"]]
     assert [d for b in batches for d in b] == docs
+
+
+def test_numbered_sections_refuse_to_mix_chapters_after_a_restart():
+    docs = [doc("a", section=1), doc("b", section=2), doc("c", section=1)]
+    with pytest.raises(ValueError, match="restart"):
+        select_numbered_sections(docs, 1)
+    assert ids(select_numbered_sections(docs, 2)) == ["b"]
+
+
+def test_section_labels_are_unique(require_epubs):
+    for title in prep_cache_for_translation():
+        labels = [s.label for s in sections_of(title)[1]]
+        assert len(labels) == len(set(labels)), title

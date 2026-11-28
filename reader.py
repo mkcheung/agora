@@ -1,9 +1,12 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import cache
+
 from langchain_core.documents import Document
+
 from ingest import ROOT, WORKS
 from parsers import parse_epub
+
 
 @cache
 def prep_cache_for_translation():
@@ -119,8 +122,10 @@ def list_sections(paragraphs: list[Document]) -> list[Section]:
             if count % PARAGRAPHS_PER_RANGE == 0:
                 starts.append(index)
             count += 1
+    if starts:
+        starts[0] = 0  # leading notes, if any, belong to the first section
 
-    sections = []
+    sections, used_labels = [], set()
     for number, (start, end) in enumerate(zip(starts, starts[1:] + [len(paragraphs)]), 1):
         span = paragraphs[start:end]
         first = span[0].metadata
@@ -130,6 +135,13 @@ def list_sections(paragraphs: list[Document]) -> list[Section]:
         else:
             numbers = [doc.metadata["paragraph"] for doc in span if not is_note(doc)]
             label, unnumbered = f"Paragraphs {numbers[0]}–{numbers[-1]}", False
+        # A division can come back after its chapters (Smith's Book IV appendix,
+        # Kant's Analytic appendix); name the heading so the labels stay distinct.
+        if label in used_labels and first.get("heading"):
+            label = f"{label}: {first['heading']}"
+        if label in used_labels:
+            label = f"{label} ({number})"
+        used_labels.add(label)
         chars = sum(len(doc.page_content) for doc in span)
         sections.append(Section(f"s{number}", label, start, end, chars, unnumbered))
     return sections
@@ -149,22 +161,34 @@ def select_numbered_sections(paragraphs: list[Document], first: int, last: int |
     """Keep the paragraphs whose § number (the 'section' field) is in first..last, with their notes.
 
     § numbers run through the whole work in Hume's Enquiry and Locke's Second
-    Treatise, but restart each chapter in Locke's Essay and Wollstonecraft, so for
-    those pass in a single chapter's paragraphs.
+    Treatise, but restart in Locke's Essay, Wollstonecraft, and Kant's Critique, so
+    for those pass in a single chapter's paragraphs. A request that matches § numbers
+    on both sides of a restart raises ValueError rather than mixing chapters.
     """
     last = first if last is None else last
-    kept, kept_ids = [], set()
+    wanted = f"§{first}" + (f"–§{last}" if last != first else "")
+    kept, kept_ids, runs = [], set(), set()
+    run, previous = 0, None
     for doc in paragraphs:
         if is_note(doc):
             keep = doc.metadata["reference_block_id"] in kept_ids
         else:
             number = doc.metadata.get("section")
             keep = isinstance(number, int) and first <= number <= last
+            if isinstance(number, int):
+                if previous is not None and number < previous:
+                    run += 1  # numbering restarted
+                previous = number
+            if keep:
+                runs.add(run)
         if keep:
             kept.append(doc)
             kept_ids.add(doc.metadata["block_id"])
     if not kept:
-        raise LookupError(f"No paragraphs numbered §{first}" + (f"–§{last}" if last != first else ""))
+        raise LookupError(f"No paragraphs numbered {wanted}")
+    if len(runs) > 1:
+        raise ValueError(f"{wanted} occurs in more than one place because § numbers restart; "
+                         "pass in a single chapter's paragraphs")
     return kept
 
 
